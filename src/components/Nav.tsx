@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useSnackbar } from 'notistack'
+import ProModal from './ProModal'
 
 interface UserStatus {
   subscription_status: string
@@ -16,6 +17,7 @@ export default function Nav() {
   const { enqueueSnackbar } = useSnackbar()
   const [user, setUser] = useState<UserStatus | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [showProModal, setShowProModal] = useState(false)
 
   useEffect(() => {
     fetch('/api/user/me')
@@ -44,6 +46,15 @@ export default function Nav() {
     if (data.url) window.location.href = data.url
   }
 
+  // Listen for modal-triggered upgrade
+  useEffect(() => {
+    function handleUpgrade() {
+      upgrade()
+    }
+    window.addEventListener('pro-upgrade', handleUpgrade)
+    return () => window.removeEventListener('pro-upgrade', handleUpgrade)
+  }, [])
+
   async function manageSubscription() {
     const res = await fetch('/api/stripe/portal', { method: 'POST' })
     if (!res.ok) {
@@ -68,7 +79,9 @@ export default function Nav() {
   ]
 
   return (
-    <nav className="bg-white border-b border-slate-200">
+    <>
+      <ProModal open={showProModal} onClose={() => setShowProModal(false)} />
+      <nav className="bg-white border-b border-slate-200">
       <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-14">
         <Link href="/dashboard" className="font-semibold text-slate-800 text-sm">
           Invoice Tracker
@@ -88,6 +101,14 @@ export default function Nav() {
               {link.label}
             </Link>
           ))}
+          {!isPro && (
+            <button
+              onClick={() => setShowProModal(true)}
+              className="px-3 py-1.5 rounded text-sm font-semibold bg-yellow-400 hover:bg-yellow-500 text-slate-900 transition-colors ml-2"
+            >
+              Subscribe to Pro
+            </button>
+          )}
 
           <div className="ml-3 flex items-center gap-2">
             {isPro ? (
@@ -106,7 +127,7 @@ export default function Nav() {
               </>
             ) : (
               <button
-                onClick={upgrade}
+                onClick={() => setShowProModal(true)}
                 className="px-3 py-1.5 rounded text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors"
               >
                 Upgrade to Pro
@@ -164,7 +185,7 @@ export default function Nav() {
               </div>
             ) : (
               <button
-                onClick={upgrade}
+                onClick={() => setShowProModal(true)}
                 className="w-full px-3 py-2 rounded-lg text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors text-left"
               >
                 Upgrade to Pro
@@ -190,5 +211,6 @@ export default function Nav() {
         </div>
       )}
     </nav>
+    </>
   )
 }
