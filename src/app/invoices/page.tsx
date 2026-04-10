@@ -187,6 +187,7 @@ export default function InvoicesPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [showSettingsPrompt, setShowSettingsPrompt] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   // New invoice form
@@ -325,7 +326,14 @@ export default function InvoicesPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-slate-800">Invoices</h1>
           <button
-            onClick={() => { setShowForm(!showForm); setShowPreview(false) }}
+            onClick={() => {
+              if (!showForm && !hasProfileData) {
+                setShowSettingsPrompt(true)
+                return
+              }
+              setShowForm(!showForm)
+              setShowPreview(false)
+            }}
             className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
           >
             {showForm ? 'Cancel' : '+ New Invoice'}
@@ -547,6 +555,32 @@ export default function InvoicesPage() {
           </div>
         )}
       </main>
+
+      {/* Settings prompt modal */}
+      {showSettingsPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+            <h2 className="text-base font-semibold text-slate-800 mb-2">Complete your profile first</h2>
+            <p className="text-sm text-slate-500 mb-5">
+              Add your business details in Settings before creating an invoice — your name, PayID, and other details will appear on invoices sent to clients.
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowSettingsPrompt(false)}
+                className="text-sm text-slate-500 hover:text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                Maybe later
+              </button>
+              <Link
+                href="/settings"
+                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors"
+              >
+                Go to Settings
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Invoice preview modal */}
       {showPreview && (
