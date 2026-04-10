@@ -10,10 +10,18 @@ export default function SignupPage() {
   const { enqueueSnackbar } = useSnackbar()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const passwordsMatch = password === confirmPassword
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+
+    if (!passwordsMatch) {
+      enqueueSnackbar('Passwords do not match', { variant: 'error' })
+      return
+    }
+
     setLoading(true)
 
     const res = await fetch('/api/auth/signup', {
@@ -70,9 +78,25 @@ export default function SignupPage() {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Confirm password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={8}
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Re-enter password"
+            />
+            {confirmPassword.length > 0 && !passwordsMatch && (
+              <p className="mt-1 text-xs text-red-600">Passwords do not match.</p>
+            )}
+          </div>
+
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !passwordsMatch}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
           >
             {loading ? 'Creating account…' : 'Create account'}
