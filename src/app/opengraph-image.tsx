@@ -79,12 +79,21 @@ export default async function Image() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <div style={{ fontSize: 76, fontWeight: 800, color: '#020617', lineHeight: 1.02, letterSpacing: '-0.05em' }}>
-              Track your income
-              <br />
-              without the accounting headache
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                fontSize: 76,
+                fontWeight: 800,
+                color: '#020617',
+                lineHeight: 1.02,
+                letterSpacing: '-0.05em',
+              }}
+            >
+              <span>Track your income</span>
+              <span>without the accounting headache</span>
             </div>
-            <div style={{ fontSize: 30, color: '#475569', maxWidth: 860, lineHeight: 1.35 }}>
+            <div style={{ display: 'flex', fontSize: 30, color: '#475569', maxWidth: 860, lineHeight: 1.35 }}>
               Create invoices in seconds, track expenses, and see your real profit instantly from one clean dashboard.
             </div>
           </div>
@@ -119,8 +128,8 @@ export default async function Image() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
-              <div style={{ fontSize: 18, color: '#64748B' }}>Built for contractors and freelancers</div>
-              <div style={{ fontSize: 26, color: '#0F172A', fontWeight: 800 }}>invoicesandexpenses.com</div>
+              <div style={{ display: 'flex', fontSize: 18, color: '#64748B' }}>Built for contractors and freelancers</div>
+              <div style={{ display: 'flex', fontSize: 26, color: '#0F172A', fontWeight: 800 }}>invoicesandexpenses.com</div>
             </div>
           </div>
         </div>
