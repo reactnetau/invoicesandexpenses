@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
     return res
   } catch (error) {
     console.error('Signup failed:', error)
+    const err = error as { name?: string; message?: string; code?: string }
 
     if (error instanceof Error && error.message.includes('JWT_SECRET is not set')) {
       return NextResponse.json({ error: 'Server config error: JWT_SECRET is missing' }, { status: 500 })
@@ -79,8 +80,36 @@ export async function POST(req: NextRequest) {
       if (error.code === 'P1000') {
         return NextResponse.json({ error: 'Database authentication failed. Check DB credentials.' }, { status: 500 })
       }
+      if (error.code === 'P1010') {
+        return NextResponse.json({ error: 'Database access denied for this user/schema.' }, { status: 500 })
+      }
     }
 
-    return NextResponse.json({ error: 'Signup failed' }, { status: 500 })
+    if (error instanceof Prisma.PrismaClientValidationError) {
+      return NextResponse.json({ error: 'Database query validation failed.' }, { status: 500 })
+    }
+
+    if (error instanceof Prisma.PrismaClientRustPanicError) {
+      return NextResponse.json({ error: 'Prisma engine crashed while handling signup.' }, { status: 500 })
+    }
+
+    if (typeof err.message === 'string' && err.message.includes('HS256')) {
+      return NextResponse.json(
+        { error: 'Server config error: JWT_SECRET is invalid for HS256 (use a long random secret).' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json(
+      {
+        error: 'Signup failed',
+        debug: {
+          name: err.name ?? 'UnknownError',
+          code: err.code ?? null,
+          message: err.message?.slice(0, 200) ?? null,
+        },
+      },
+      { status: 500 }
+    )
   }
 }
