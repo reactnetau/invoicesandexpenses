@@ -135,11 +135,11 @@ export default function SettingsPage() {
           {/* Business details */}
           <section className="bg-white border border-slate-200 rounded-xl p-5">
             <h2 className="text-sm font-semibold text-slate-700 mb-4">Business Details</h2>
-            <p className="text-xs text-slate-400 mb-4">These appear on PDF invoices sent to your clients.</p>
+            <p className="text-xs text-slate-400 mb-4">These appear on PDF invoices sent to your clients. Fields marked <span className="text-red-500">*</span> are required to create invoices.</p>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Business name</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Business name <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={businessName}
@@ -183,7 +183,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">ABN / Tax number</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">ABN / Tax number <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={abn}
@@ -202,7 +202,7 @@ export default function SettingsPage() {
 
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                PayID
+                PayID <span className="text-red-500">*</span>
                 <span className="ml-2 inline-flex items-center gap-1 text-emerald-600 font-normal">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />

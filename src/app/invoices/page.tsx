@@ -88,7 +88,7 @@ function InvoicePreview({ clientName, clientEmail, amount, dueDate, profile, fie
 
   const paymentRows: [string, string][] = fields.payid && profile?.payid
     ? [['PayID', profile.payid], ['Reference', 'INV-PREVIEW']]
-    : [['Bank', 'First National Bank'], ['Account name', 'Schmapps Ltd'], ['Account number', '12345678'], ['Sort code', '01-02-03'], ['Reference', 'INV-PREVIEW']]
+    : [['Reference', 'INV-PREVIEW']]
 
   return (
     <div className="bg-white rounded-lg border border-slate-200 overflow-hidden text-xs font-sans w-full" style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}>
@@ -318,6 +318,7 @@ export default function InvoicesPage() {
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n)
 
   const hasProfileData = profile && Object.values(profile).some(Boolean)
+  const hasRequiredFields = !!(profile?.business_name?.trim() && profile?.abn?.trim() && profile?.payid?.trim())
 
   return (
     <>
@@ -327,7 +328,7 @@ export default function InvoicesPage() {
           <h1 className="text-xl font-bold text-slate-800">Invoices</h1>
           <button
             onClick={() => {
-              if (!showForm && !hasProfileData) {
+              if (!showForm && !hasRequiredFields) {
                 setShowSettingsPrompt(true)
                 return
               }
@@ -561,9 +562,14 @@ export default function InvoicesPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
             <h2 className="text-base font-semibold text-slate-800 mb-2">Complete your profile first</h2>
-            <p className="text-sm text-slate-500 mb-5">
-              Add your business details in Settings before creating an invoice — your name, PayID, and other details will appear on invoices sent to clients.
+            <p className="text-sm text-slate-500 mb-3">
+              The following required fields are missing from your Settings:
             </p>
+            <ul className="text-sm mb-5 space-y-1">
+              {!profile?.business_name?.trim() && <li className="flex items-center gap-2 text-red-600"><span>✗</span> Business name</li>}
+              {!profile?.abn?.trim() && <li className="flex items-center gap-2 text-red-600"><span>✗</span> ABN / Tax number</li>}
+              {!profile?.payid?.trim() && <li className="flex items-center gap-2 text-red-600"><span>✗</span> PayID</li>}
+            </ul>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowSettingsPrompt(false)}

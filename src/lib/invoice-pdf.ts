@@ -151,16 +151,12 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Buffer
     color: rgb(0.05, 0.09, 0.18),
   })
 
-  const paymentLines = input.payid
+  const paymentLines: [string, string][] = input.payid
     ? [
         ['PayID', input.payid],
         ['Reference', `INV-${input.publicId.slice(0, 8).toUpperCase()}`],
       ]
     : [
-        ['Bank', 'First National Bank'],
-        ['Account name', 'Schmapps Ltd'],
-        ['Account number', '12345678'],
-        ['Sort code', '01-02-03'],
         ['Reference', `INV-${input.publicId.slice(0, 8).toUpperCase()}`],
       ]
 
