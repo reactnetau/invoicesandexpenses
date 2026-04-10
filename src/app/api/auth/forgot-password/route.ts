@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendPasswordResetEmail } from '@/lib/email'
+import { getAppUrl } from '@/lib/app-url'
 import { randomBytes } from 'crypto'
 
 export async function POST(req: NextRequest) {
@@ -30,8 +31,7 @@ export async function POST(req: NextRequest) {
     data: { user_id: user.id, token, expires_at },
   })
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-  const resetUrl = `${appUrl}/reset-password?token=${token}`
+  const resetUrl = `${getAppUrl()}/reset-password?token=${token}`
 
   try {
     await sendPasswordResetEmail(email, resetUrl)
