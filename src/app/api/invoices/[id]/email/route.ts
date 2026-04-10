@@ -64,6 +64,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       dueDate: invoice.due_date,
       publicId: invoice.public_id,
       pdfBuffer,
+      businessName: user?.business_name,
     })
 
     return NextResponse.json({ ok: true })

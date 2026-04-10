@@ -23,6 +23,7 @@ interface InvoiceEmailInput {
   dueDate: Date
   publicId: string
   pdfBuffer: Buffer
+  businessName?: string | null
 }
 
 function base64UrlEncode(value: string) {
@@ -182,10 +183,11 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
 
 export async function sendInvoiceEmail(input: InvoiceEmailInput): Promise<void> {
   const invoiceUrl = `${getAppUrl()}/invoice/${input.publicId}`
+  const senderName = input.businessName?.trim() || 'Invoice Tracker'
 
   await sendEmail({
     to: input.to,
-    subject: `Your invoice from Invoice Tracker - ${formatAmount(input.amount)}`,
+    subject: `Invoice from ${senderName} - ${formatAmount(input.amount)}`,
     html: `
       <p>Hi ${input.clientName},</p>
       <p>Your invoice is ready. A PDF copy is attached for your records.</p>

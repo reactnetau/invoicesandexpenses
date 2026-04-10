@@ -98,6 +98,7 @@ export async function POST(req: NextRequest) {
         dueDate: invoice.due_date,
         publicId: invoice.public_id,
         pdfBuffer,
+        businessName: user?.business_name,
       })
 
       email_sent = true
