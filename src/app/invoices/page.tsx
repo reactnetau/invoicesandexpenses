@@ -478,7 +478,8 @@ export default function InvoicesPage() {
           <p className="text-slate-400 text-sm">No invoices yet. Create your first one above.</p>
         ) : (
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px] text-sm">
               <thead>
                 <tr className="border-b border-slate-100">
                   <th className="text-left px-4 py-3 text-slate-500 font-medium">Client</th>
@@ -553,6 +554,7 @@ export default function InvoicesPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </main>
