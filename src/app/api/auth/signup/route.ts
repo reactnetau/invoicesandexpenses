@@ -56,12 +56,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Server config error: JWT_SECRET is missing' }, { status: 500 })
     }
 
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      if (error.message.includes('Environment variable not found: DATABASE_URL')) {
+        return NextResponse.json({ error: 'Server config error: DATABASE_URL is missing' }, { status: 500 })
+      }
+      return NextResponse.json(
+        { error: 'Database connection failed. Check DATABASE_URL and Railway Postgres linkage.' },
+        { status: 500 }
+      )
+    }
+
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2021') {
         return NextResponse.json({ error: 'Database tables are missing. Run Prisma migrations.' }, { status: 500 })
       }
       if (error.code === 'P2002') {
         return NextResponse.json({ error: 'Email already in use' }, { status: 409 })
+      }
+      if (error.code === 'P1001') {
+        return NextResponse.json({ error: 'Cannot reach database server. Check DATABASE_URL.' }, { status: 500 })
+      }
+      if (error.code === 'P1000') {
+        return NextResponse.json({ error: 'Database authentication failed. Check DB credentials.' }, { status: 500 })
       }
     }
 
