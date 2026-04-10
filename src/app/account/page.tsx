@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSnackbar } from 'notistack';
 import { useRouter } from "next/navigation";
 import ConfirmModal from "@/components/ConfirmModal";
 import Nav from "@/components/Nav";
@@ -12,6 +13,7 @@ interface UserStatus {
 }
 
 export default function AccountPage() {
+  const { enqueueSnackbar } = useSnackbar();
   const [user, setUser] = useState<UserStatus | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -31,9 +33,12 @@ export default function AccountPage() {
     const res = await fetch("/api/user/delete", { method: "POST" });
     setDeleting(false);
     if (res.ok) {
-      router.push("/goodbye");
+      enqueueSnackbar('Account deleted successfully', { variant: 'success' });
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1200);
     } else {
-      alert("Failed to delete account.");
+      enqueueSnackbar('Failed to delete account', { variant: 'error' });
     }
   }
 
