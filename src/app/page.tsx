@@ -3,6 +3,16 @@ import Link from 'next/link'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import MarketingNav from '@/components/MarketingNav'
+import type { Metadata } from 'next'
+import { getAppUrl } from '@/lib/app-url'
+
+export const metadata: Metadata = {
+  title: 'Invoice Tracker — Free Invoicing & Expense Tracking for Freelancers',
+  description: 'Create professional invoices, track expenses, and see your profit instantly. Free invoicing software built for freelancers and contractors. No accounting knowledge needed.',
+  alternates: {
+    canonical: getAppUrl(),
+  },
+}
 
 const FOUNDING_MEMBER_LIMIT = 50
 
@@ -14,8 +24,89 @@ export default async function Home() {
   const spotsRemaining = Math.max(0, FOUNDING_MEMBER_LIMIT - totalUsers)
   const isFull = spotsRemaining === 0
 
+  const appUrl = getAppUrl()
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': `${appUrl}/#website`,
+        url: appUrl,
+        name: 'Invoice Tracker',
+        description: 'Free invoicing and expense tracking for freelancers and contractors',
+      },
+      {
+        '@type': 'SoftwareApplication',
+        name: 'Invoice Tracker',
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        offers: [
+          {
+            '@type': 'Offer',
+            price: '0',
+            priceCurrency: 'USD',
+            name: 'Free Plan',
+            description: 'Up to 5 invoices per month, unlimited expenses',
+          },
+          {
+            '@type': 'Offer',
+            price: '7',
+            priceCurrency: 'USD',
+            name: 'Pro Plan',
+            description: 'Unlimited invoices, CSV export, AI summary',
+          },
+        ],
+        description: 'Simple invoice and expense tracking for freelancers and contractors. Create invoices, track expenses, and see your profit instantly.',
+        url: appUrl,
+        featureList: [
+          'Create and send professional invoices',
+          'Track business expenses by category',
+          'Real-time profit dashboard',
+          'PDF invoice generation',
+          'CSV export',
+          'AI financial summary',
+          'Public invoice links',
+        ],
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'Is Invoice Tracker free?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Yes. The free plan lets you create up to 5 invoices per month with unlimited expense tracking. The Pro plan is $7/month for unlimited invoices and CSV export.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Who is Invoice Tracker for?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Invoice Tracker is built for freelancers, contractors, and small business owners who want simple invoicing and expense tracking without complex accounting software.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can I send invoices as PDF?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Yes. You can generate and email a PDF invoice directly to your client from the invoices page.',
+            },
+          },
+        ],
+      },
+    ],
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       <MarketingNav />
 
