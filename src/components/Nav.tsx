@@ -101,14 +101,7 @@ export default function Nav() {
               {link.label}
             </Link>
           ))}
-          {!isPro && (
-            <button
-              onClick={() => setShowProModal(true)}
-              className="px-3 py-1.5 rounded text-sm font-semibold bg-yellow-400 hover:bg-yellow-500 text-slate-900 transition-colors ml-2"
-            >
-              Subscribe to Pro
-            </button>
-          )}
+          {/* Subscribe to Pro button removed from desktop navbar */}
 
           <div className="ml-3 flex items-center gap-2">
             {isPro ? (
@@ -125,13 +118,6 @@ export default function Nav() {
                   </button>
                 )}
               </>
-            ) : (
-              <button
-                onClick={() => setShowProModal(true)}
-                className="px-3 py-1.5 rounded text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-              >
-                Upgrade to Pro
-              </button>
             )}
 
             <button
@@ -183,14 +169,7 @@ export default function Nav() {
                 <span>Pro plan</span>
                 <span className="px-2 py-0.5 rounded-full bg-blue-100 text-xs">Active</span>
               </div>
-            ) : (
-              <button
-                onClick={() => setShowProModal(true)}
-                className="w-full px-3 py-2 rounded-lg text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors text-left"
-              >
-                Upgrade to Pro
-              </button>
-            )}
+            ) : null}
 
             {canManageBilling && (
               <button
