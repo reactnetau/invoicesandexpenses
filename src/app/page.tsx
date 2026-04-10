@@ -14,15 +14,18 @@ export const metadata: Metadata = {
   },
 }
 
+
 const FOUNDING_MEMBER_LIMIT = 50
+const SHOW_FOUNDING_MEMBERS = process.env.NEXT_PUBLIC_FOUNDING_MEMBERS === 'true';
 
 export default async function Home() {
   const session = await getSession()
   if (session) redirect('/dashboard')
 
-  const totalUsers = await prisma.user.count()
-  const spotsRemaining = Math.max(0, FOUNDING_MEMBER_LIMIT - totalUsers)
-  const isFull = spotsRemaining === 0
+
+  const totalUsers = SHOW_FOUNDING_MEMBERS ? await prisma.user.count() : 0;
+  const spotsRemaining = SHOW_FOUNDING_MEMBERS ? Math.max(0, FOUNDING_MEMBER_LIMIT - totalUsers) : 0;
+  const isFull = SHOW_FOUNDING_MEMBERS ? spotsRemaining === 0 : true;
 
   const appUrl = getAppUrl()
 
@@ -116,7 +119,7 @@ export default async function Home() {
         <section className="max-w-5xl mx-auto px-4 pt-20 pb-16 text-center">
 
           {/* Founding member badge */}
-          {!isFull && (
+          {SHOW_FOUNDING_MEMBERS && !isFull && (
             <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-8">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
               {spotsRemaining} founding member spot{spotsRemaining === 1 ? '' : 's'} remaining — free for life
@@ -148,7 +151,7 @@ export default async function Home() {
         </section>
 
         {/* ── FOUNDING MEMBER OFFER ── */}
-        {!isFull ? (
+        {SHOW_FOUNDING_MEMBERS && !isFull ? (
           <section className="max-w-2xl mx-auto px-4 pb-16">
             <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6">
               <div className="flex items-start justify-between gap-4 mb-4">
