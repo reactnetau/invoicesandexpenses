@@ -163,7 +163,8 @@ export default function ExpensesPage() {
           <p className="text-slate-400 text-sm">No expenses yet. Add your first one above.</p>
         ) : (
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[520px] text-sm">
               <thead>
                 <tr className="border-b border-slate-100">
                   <th className="text-left px-4 py-3 text-slate-500 font-medium">Category</th>
@@ -192,6 +193,7 @@ export default function ExpensesPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </main>

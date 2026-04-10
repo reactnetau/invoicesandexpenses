@@ -253,7 +253,8 @@ function DashboardContent() {
             <p className="text-sm text-slate-400">No invoices yet.</p>
           ) : (
             <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] text-sm">
                 <thead>
                   <tr className="border-b border-slate-100">
                     <th className="text-left px-4 py-2 text-slate-500 font-medium">Client</th>
@@ -277,6 +278,7 @@ function DashboardContent() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>
@@ -293,7 +295,8 @@ function DashboardContent() {
             <p className="text-sm text-slate-400">No expenses yet.</p>
           ) : (
             <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[480px] text-sm">
                 <thead>
                   <tr className="border-b border-slate-100">
                     <th className="text-left px-4 py-2 text-slate-500 font-medium">Category</th>
@@ -313,6 +316,7 @@ function DashboardContent() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>
