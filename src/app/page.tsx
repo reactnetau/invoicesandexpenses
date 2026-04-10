@@ -100,13 +100,7 @@ export default async function Home() {
               </div>
             </div>
           </section>
-        ) : (
-          <section className="max-w-2xl mx-auto px-4 pb-16">
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-sm text-slate-600 text-center">
-              Founding member spots are all claimed. Sign up free (5 invoices/month) or go Pro for $7/month.
-            </div>
-          </section>
-        )}
+        ) : null}
 
         {/* ── FEATURES ── */}
         <section className="bg-slate-50 border-y border-slate-100 py-20">

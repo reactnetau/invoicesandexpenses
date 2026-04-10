@@ -15,6 +15,7 @@ export default function Nav() {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [user, setUser] = useState<UserStatus | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     fetch('/api/user/me')
@@ -22,6 +23,10 @@ export default function Nav() {
       .then(setUser)
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [pathname])
 
   async function logout() {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -67,7 +72,7 @@ export default function Nav() {
           Invoice Tracker
         </Link>
 
-        <div className="flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-1">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -114,7 +119,74 @@ export default function Nav() {
             </button>
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setMenuOpen((open) => !open)}
+          className="md:hidden inline-flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-slate-700 hover:bg-slate-50 transition-colors"
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+        >
+          <span className="sr-only">{menuOpen ? 'Close menu' : 'Open menu'}</span>
+          <div className="flex flex-col gap-1.5">
+            <span className={`block h-0.5 w-5 bg-current transition-transform ${menuOpen ? 'translate-y-2 rotate-45' : ''}`} />
+            <span className={`block h-0.5 w-5 bg-current transition-opacity ${menuOpen ? 'opacity-0' : 'opacity-100'}`} />
+            <span className={`block h-0.5 w-5 bg-current transition-transform ${menuOpen ? '-translate-y-2 -rotate-45' : ''}`} />
+          </div>
+        </button>
       </div>
+
+      {menuOpen && (
+        <div className="md:hidden border-t border-slate-200 bg-white">
+          <div className="max-w-5xl mx-auto px-4 py-3 flex flex-col gap-2">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  pathname.startsWith(link.href)
+                    ? 'bg-slate-100 text-slate-900'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            <div className="h-px bg-slate-100 my-1" />
+
+            {isPro ? (
+              <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-blue-50 text-blue-700 text-sm font-semibold">
+                <span>Pro plan</span>
+                <span className="px-2 py-0.5 rounded-full bg-blue-100 text-xs">Active</span>
+              </div>
+            ) : (
+              <button
+                onClick={upgrade}
+                className="w-full px-3 py-2 rounded-lg text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors text-left"
+              >
+                Upgrade to Pro
+              </button>
+            )}
+
+            {canManageBilling && (
+              <button
+                onClick={manageSubscription}
+                className="w-full px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+              >
+                Billing
+              </button>
+            )}
+
+            <button
+              onClick={logout}
+              className="w-full px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }

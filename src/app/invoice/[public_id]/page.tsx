@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 
@@ -5,10 +6,8 @@ interface Props {
   params: Promise<{ public_id: string }>
 }
 
-export default async function PublicInvoicePage({ params }: Props) {
-  const { public_id } = await params
-
-  const invoice = await prisma.invoice.findFirst({
+async function getPublicInvoice(public_id: string) {
+  return prisma.invoice.findFirst({
     where: { public_id, is_public: true },
     select: {
       client_name: true,
@@ -17,11 +16,62 @@ export default async function PublicInvoicePage({ params }: Props) {
       status: true,
     },
   })
+}
+
+function formatAmount(amount: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+}
+
+function formatDueDate(dueDate: Date) {
+  return new Date(dueDate).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { public_id } = await params
+  const invoice = await getPublicInvoice(public_id)
+
+  if (!invoice) {
+    return {
+      title: 'Invoice not found',
+      description: 'This invoice could not be found.',
+    }
+  }
+
+  const amount = formatAmount(parseFloat(invoice.amount.toString()))
+  const dueDate = formatDueDate(invoice.due_date)
+  const statusLabel = invoice.status === 'paid' ? 'Paid' : 'Open'
+  const title = `${amount} invoice for ${invoice.client_name}`
+  const description = `${statusLabel} invoice due ${dueDate}. View the secure invoice details online.`
+  const imageUrl = `/invoice/${public_id}/opengraph-image`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [imageUrl],
+    },
+  }
+}
+
+export default async function PublicInvoicePage({ params }: Props) {
+  const { public_id } = await params
+
+  const invoice = await getPublicInvoice(public_id)
 
   if (!invoice) notFound()
-
-  const fmt = (n: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n)
 
   const isPaid = invoice.status === 'paid'
   const isOverdue =
@@ -57,17 +107,13 @@ export default async function PublicInvoicePage({ params }: Props) {
             <div>
               <p className="text-xs text-slate-400 mb-0.5">Amount due</p>
               <p className="text-2xl font-bold text-slate-900">
-                {fmt(parseFloat(invoice.amount.toString()))}
+                {formatAmount(parseFloat(invoice.amount.toString()))}
               </p>
             </div>
             <div>
               <p className="text-xs text-slate-400 mb-0.5">Due date</p>
               <p className="text-base font-medium text-slate-700">
-                {new Date(invoice.due_date).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                {formatDueDate(invoice.due_date)}
               </p>
             </div>
           </div>
