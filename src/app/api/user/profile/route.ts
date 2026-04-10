@@ -11,6 +11,7 @@ export async function GET() {
     where: { id: session.userId },
     select: {
       email: true,
+      currency: true,
       business_name: true,
       full_name: true,
       phone: true,
@@ -29,6 +30,7 @@ export async function GET() {
 
   return NextResponse.json({
     email: user.email,
+    currency: user.currency ?? 'USD',
     business_name: user.business_name,
     full_name: user.full_name,
     phone: user.phone,
@@ -43,9 +45,10 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { business_name, full_name, phone, address, abn, payid } = body
+  const { currency, business_name, full_name, phone, address, abn, payid } = body
 
   const data: Record<string, string | null> = {
+    currency: currency?.trim() || 'USD',
     business_name: business_name?.trim() || null,
     full_name: full_name?.trim() || null,
     phone: phone?.trim() || null,
@@ -57,10 +60,16 @@ export async function POST(req: NextRequest) {
     data.payid_encrypted = payid?.trim() ? encrypt(payid.trim()) : null
   }
 
-  await prisma.user.update({
-    where: { id: session.userId },
-    data,
-  })
+  try {
+    await prisma.user.update({
+      where: { id: session.userId },
+      data,
+    })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('[profile/save]', message)
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
 
   return NextResponse.json({ ok: true })
 }

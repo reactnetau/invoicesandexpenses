@@ -8,7 +8,7 @@ const FOUNDING_MEMBER_LIMIT = 50
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json()
+    const { email, password, currency = 'USD' } = await req.json()
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 })
@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
       data: {
         email,
         password_hash,
+        currency,
         is_founding_member: isFoundingMember,
         // Founding members get permanent Pro — no Stripe needed
         subscription_status: isFoundingMember ? 'active' : 'inactive',

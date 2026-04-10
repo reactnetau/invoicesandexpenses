@@ -11,6 +11,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [currency, setCurrency] = useState('USD')
   const [loading, setLoading] = useState(false)
   const passwordsMatch = password === confirmPassword
 
@@ -27,7 +28,7 @@ export default function SignupPage() {
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, currency }),
     })
 
     setLoading(false)
@@ -53,6 +54,26 @@ export default function SignupPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Currency</label>
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="USD">USD — US Dollar ($)</option>
+              <option value="AUD">AUD — Australian Dollar (A$)</option>
+              <option value="GBP">GBP — British Pound (£)</option>
+              <option value="EUR">EUR — Euro (€)</option>
+              <option value="CAD">CAD — Canadian Dollar (C$)</option>
+              <option value="NZD">NZD — New Zealand Dollar (NZ$)</option>
+              <option value="SGD">SGD — Singapore Dollar (S$)</option>
+              <option value="JPY">JPY — Japanese Yen (¥)</option>
+              <option value="CHF">CHF — Swiss Franc (CHF)</option>
+              <option value="INR">INR — Indian Rupee (₹)</option>
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
             <input

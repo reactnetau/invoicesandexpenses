@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack'
 
 interface Profile {
   email: string
+  currency: string
   business_name: string
   full_name: string
   phone: string
@@ -14,12 +15,26 @@ interface Profile {
   payid: string
 }
 
+const CURRENCIES = [
+  { code: 'USD', label: 'USD — US Dollar ($)' },
+  { code: 'AUD', label: 'AUD — Australian Dollar (A$)' },
+  { code: 'GBP', label: 'GBP — British Pound (£)' },
+  { code: 'EUR', label: 'EUR — Euro (€)' },
+  { code: 'CAD', label: 'CAD — Canadian Dollar (C$)' },
+  { code: 'NZD', label: 'NZD — New Zealand Dollar (NZ$)' },
+  { code: 'SGD', label: 'SGD — Singapore Dollar (S$)' },
+  { code: 'JPY', label: 'JPY — Japanese Yen (¥)' },
+  { code: 'CHF', label: 'CHF — Swiss Franc (CHF)' },
+  { code: 'INR', label: 'INR — Indian Rupee (₹)' },
+]
+
 export default function SettingsPage() {
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
   const [email, setEmail] = useState('')
+  const [currency, setCurrency] = useState('USD')
   const [businessName, setBusinessName] = useState('')
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
@@ -32,6 +47,7 @@ export default function SettingsPage() {
       .then((r) => r.json())
       .then((d: Profile) => {
         setEmail(d.email ?? '')
+        setCurrency(d.currency ?? 'USD')
         setBusinessName(d.business_name ?? '')
         setFullName(d.full_name ?? '')
         setPhone(d.phone ?? '')
@@ -50,6 +66,7 @@ export default function SettingsPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        currency,
         business_name: businessName,
         full_name: fullName,
         phone,
@@ -62,7 +79,8 @@ export default function SettingsPage() {
     if (res.ok) {
       enqueueSnackbar('Settings saved', { variant: 'success' })
     } else {
-      enqueueSnackbar('Failed to save settings', { variant: 'error' })
+      const data = await res.json().catch(() => ({}))
+      enqueueSnackbar(data.error ?? 'Failed to save settings', { variant: 'error' })
     }
   }
 
@@ -97,6 +115,20 @@ export default function SettingsPage() {
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
               />
               <p className="text-xs text-slate-400 mt-1">Email cannot be changed.</p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Currency</label>
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              >
+                {CURRENCIES.map((c) => (
+                  <option key={c.code} value={c.code}>{c.label}</option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-400 mt-1">Used in your AI summary and invoice formatting.</p>
             </div>
           </section>
 

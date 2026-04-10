@@ -20,6 +20,13 @@ export async function GET(req: Request) {
   const startOfNextFinancialYear = new Date(selectedFyStartYear + 1, 6, 1)
   const financialYearLabel = `FY ${selectedFyStartYear}/${String(selectedFyStartYear + 1).slice(-2)}`
 
+  // ── Fetch user currency ──────────────────────────────────────────────────
+  const userRecord = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { currency: true },
+  })
+  const currency = userRecord?.currency ?? 'USD'
+
   // ── Prisma aggregations — no raw rows sent to AI ────────────────────────
   const [paidInvoices, unpaidInvoices, expenses] = await Promise.all([
     prisma.invoice.aggregate({
@@ -55,6 +62,7 @@ export async function GET(req: Request) {
 
   const metrics = {
     financial_year: financialYearLabel,
+    currency,
     income,
     expenses: expenseTotal,
     profit: income - expenseTotal,
@@ -72,7 +80,7 @@ export async function GET(req: Request) {
         {
           role: 'user',
           content:
-            `You are a helpful financial assistant. Summarise this financial year data in 2 short sentences. Be clear and concise.\n\n${JSON.stringify(metrics)}`,
+            `You are a helpful financial assistant. Summarise this financial year data in 2 short sentences. Be clear and concise. Always format monetary values using the currency code provided (${currency}) — do not use any other currency symbol.\n\n${JSON.stringify(metrics)}`,
         },
       ],
     })

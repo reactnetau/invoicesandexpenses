@@ -16,6 +16,7 @@ model User {
   subscription_end_date DateTime?
   is_founding_member    Boolean   @default(false)
   payid_encrypted       String?
+  currency              String    @default("USD")
   business_name         String?
   full_name             String?
   phone                 String?
