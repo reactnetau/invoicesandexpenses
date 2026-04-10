@@ -41,35 +41,35 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getSession()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const body = await req.json()
-  const { currency, business_name, full_name, phone, address, abn, payid } = body
-
-  const data: Record<string, string | null> = {
-    currency: currency?.trim() || 'USD',
-    business_name: business_name?.trim() || null,
-    full_name: full_name?.trim() || null,
-    phone: phone?.trim() || null,
-    address: address?.trim() || null,
-    abn: abn?.trim() || null,
-  }
-
-  if (payid !== undefined) {
-    data.payid_encrypted = payid?.trim() ? encrypt(payid.trim()) : null
-  }
-
   try {
+    const session = await getSession()
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const body = await req.json()
+    const { currency, business_name, full_name, phone, address, abn, payid } = body
+
+    const data: Record<string, string | null> = {
+      currency: currency?.trim() || 'USD',
+      business_name: business_name?.trim() || null,
+      full_name: full_name?.trim() || null,
+      phone: phone?.trim() || null,
+      address: address?.trim() || null,
+      abn: abn?.trim() || null,
+    }
+
+    if (payid !== undefined) {
+      data.payid_encrypted = payid?.trim() ? encrypt(payid.trim()) : null
+    }
+
     await prisma.user.update({
       where: { id: session.userId },
       data,
     })
+
+    return NextResponse.json({ ok: true })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('[profile/save]', message)
     return NextResponse.json({ error: message }, { status: 500 })
   }
-
-  return NextResponse.json({ ok: true })
 }

@@ -457,7 +457,7 @@ export default function InvoicesPage() {
                 disabled={clients.length === 0}
                 className="border border-slate-300 hover:border-slate-400 text-slate-600 hover:text-slate-800 text-sm font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-40"
               >
-                Preview
+                Preview PDF
               </button>
             </div>
           </form>
