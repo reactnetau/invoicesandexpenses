@@ -136,6 +136,50 @@ function formatDueDate(date: Date) {
   })
 }
 
+export async function sendPasswordResetEmail(to: string, resetUrl: string): Promise<void> {
+  const from = `Invoice Tracker <${process.env.GMAIL_FROM ?? process.env.GMAIL_USER}>`
+  const html = `
+    <p>Hi,</p>
+    <p>We received a request to reset your Invoice Tracker password.</p>
+    <p>
+      <a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background-color:#2563eb;color:#ffffff;font-weight:bold;text-decoration:none;border-radius:8px;">
+        Reset password
+      </a>
+    </p>
+    <p>This link expires in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+  `
+  const accessToken = await getAccessToken()
+  const boundary = `boundary_${Date.now()}`
+  const parts = [
+    `From: ${from}`,
+    `To: ${to}`,
+    `Subject: Reset your Invoice Tracker password`,
+    'MIME-Version: 1.0',
+    `Content-Type: multipart/mixed; boundary="${boundary}"`,
+    '',
+    `--${boundary}`,
+    'Content-Type: text/html; charset=utf-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    Buffer.from(html, 'utf-8').toString('base64'),
+    '',
+    `--${boundary}--`,
+  ].join('\r\n')
+
+  const raw = Buffer.from(parts).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+
+  const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ raw }),
+    signal: AbortSignal.timeout(8000),
+  })
+  if (!res.ok) {
+    const data = await res.json()
+    throw new Error(`Gmail API error: ${JSON.stringify(data)}`)
+  }
+}
+
 export async function sendInvoiceEmail(input: InvoiceEmailInput): Promise<void> {
   const invoiceUrl = `${getAppUrl()}/invoice/${input.publicId}`
 
