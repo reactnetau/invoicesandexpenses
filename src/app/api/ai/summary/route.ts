@@ -3,15 +3,22 @@ import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
 import { getAI } from '@/lib/anthropic'
 
-export async function GET() {
+export async function GET(req: Request) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  // ── Date range: current calendar month ──────────────────────────────────
+  // ── Date range: selected AU financial year (Jul 1 -> Jun 30) ────────────
+  const { searchParams } = new URL(req.url)
+  const fyStartParam = Number(searchParams.get('fyStart'))
   const now = new Date()
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-  const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
-  const monthName = now.toLocaleString('en-US', { month: 'long' })
+  const currentFyStartYear = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1
+  const selectedFyStartYear =
+    Number.isInteger(fyStartParam) && fyStartParam >= 2000 && fyStartParam <= 2100
+      ? fyStartParam
+      : currentFyStartYear
+  const startOfFinancialYear = new Date(selectedFyStartYear, 6, 1)
+  const startOfNextFinancialYear = new Date(selectedFyStartYear + 1, 6, 1)
+  const financialYearLabel = `FY ${selectedFyStartYear}/${String(selectedFyStartYear + 1).slice(-2)}`
 
   // ── Prisma aggregations — no raw rows sent to AI ────────────────────────
   const [paidInvoices, unpaidInvoices, expenses] = await Promise.all([
@@ -19,7 +26,7 @@ export async function GET() {
       where: {
         user_id: session.userId,
         status: 'paid',
-        created_at: { gte: startOfMonth, lt: startOfNextMonth },
+        created_at: { gte: startOfFinancialYear, lt: startOfNextFinancialYear },
       },
       _sum: { amount: true },
       _count: { _all: true },
@@ -28,7 +35,7 @@ export async function GET() {
       where: {
         user_id: session.userId,
         status: 'unpaid',
-        created_at: { gte: startOfMonth, lt: startOfNextMonth },
+        created_at: { gte: startOfFinancialYear, lt: startOfNextFinancialYear },
       },
       _sum: { amount: true },
       _count: { _all: true },
@@ -36,7 +43,7 @@ export async function GET() {
     prisma.expense.aggregate({
       where: {
         user_id: session.userId,
-        date: { gte: startOfMonth, lt: startOfNextMonth },
+        date: { gte: startOfFinancialYear, lt: startOfNextFinancialYear },
       },
       _sum: { amount: true },
     }),
@@ -47,7 +54,7 @@ export async function GET() {
   const unpaidTotal = Number(unpaidInvoices._sum.amount ?? 0)
 
   const metrics = {
-    month: monthName,
+    financial_year: financialYearLabel,
     income,
     expenses: expenseTotal,
     profit: income - expenseTotal,
@@ -65,7 +72,7 @@ export async function GET() {
         {
           role: 'user',
           content:
-            `You are a helpful financial assistant. Summarise this monthly data in 2 short sentences. Be clear and concise.\n\n${JSON.stringify(metrics)}`,
+            `You are a helpful financial assistant. Summarise this financial year data in 2 short sentences. Be clear and concise.\n\n${JSON.stringify(metrics)}`,
         },
       ],
     })

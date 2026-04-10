@@ -13,6 +13,7 @@ interface Invoice {
   amount: string
   status: string
   due_date: string
+  created_at: string
 }
 
 interface Expense {
@@ -37,6 +38,9 @@ function DashboardContent() {
   const [loading, setLoading] = useState(true)
   const [aiSummary, setAiSummary] = useState<string | null>(null)
   const [aiLoading, setAiLoading] = useState(false)
+  const now = new Date()
+  const currentFyStartYear = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1
+  const [reportFyStartYear, setReportFyStartYear] = useState<number>(currentFyStartYear)
 
   useEffect(() => {
     Promise.all([
@@ -51,10 +55,14 @@ function DashboardContent() {
     })
   }, [])
 
+  useEffect(() => {
+    setAiSummary(null)
+  }, [reportFyStartYear])
+
   async function fetchAiSummary() {
     setAiLoading(true)
     setAiSummary(null)
-    const res = await fetch('/api/ai/summary')
+    const res = await fetch(`/api/ai/summary?fyStart=${reportFyStartYear}`)
     const data = await res.json()
     if (!res.ok) {
       setAiSummary(`Error: ${data.error ?? 'Unknown error'}`)
@@ -76,6 +84,21 @@ function DashboardContent() {
 
   const fmt = (n: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n)
+
+  const toFyStartYear = (dateValue: string) => {
+    const d = new Date(dateValue)
+    return d.getMonth() >= 6 ? d.getFullYear() : d.getFullYear() - 1
+  }
+
+  const formatFyLabel = (fyStartYear: number) => `FY ${fyStartYear}/${String(fyStartYear + 1).slice(-2)}`
+
+  const reportFyOptions = Array.from(
+    new Set([
+      currentFyStartYear,
+      ...invoices.map((i) => toFyStartYear(i.created_at)),
+      ...expenses.map((e) => toFyStartYear(e.date)),
+    ])
+  ).sort((a, b) => b - a)
 
   async function upgrade() {
     const res = await fetch('/api/stripe/checkout', { method: 'POST' })
@@ -141,9 +164,15 @@ function DashboardContent() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-slate-800">Dashboard</h1>
           {isPro ? (
-            <a href="/api/export/csv" className="text-sm text-blue-600 hover:underline">
-              Export CSV
-            </a>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400">{formatFyLabel(reportFyStartYear)}</span>
+              <a
+                href={`/api/export/csv?fyStart=${reportFyStartYear}`}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Export CSV
+              </a>
+            </div>
           ) : (
             <button
               onClick={upgrade}
@@ -171,7 +200,18 @@ function DashboardContent() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-slate-700">AI Summary</span>
-              <span className="text-xs text-slate-400">— this month</span>
+              <span className="text-xs text-slate-400">— {formatFyLabel(reportFyStartYear)}</span>
+              <select
+                value={reportFyStartYear}
+                onChange={(e) => setReportFyStartYear(Number(e.target.value))}
+                className="ml-2 text-xs border border-slate-300 rounded-md px-2 py-1 text-slate-600 bg-white"
+              >
+                {reportFyOptions.map((fyStartYear) => (
+                  <option key={fyStartYear} value={fyStartYear}>
+                    {formatFyLabel(fyStartYear)}
+                  </option>
+                ))}
+              </select>
             </div>
             <button
               onClick={fetchAiSummary}
@@ -185,7 +225,7 @@ function DashboardContent() {
             <p className="text-sm text-slate-600 leading-relaxed">{aiSummary}</p>
           ) : (
             <p className="text-sm text-slate-400 italic">
-              {aiLoading ? 'Asking AI…' : 'Click "Generate summary" to get an AI overview of this month.'}
+              {aiLoading ? 'Asking AI…' : `Click "Generate summary" to get an AI overview for ${formatFyLabel(reportFyStartYear)}.`}
             </p>
           )}
         </div>
