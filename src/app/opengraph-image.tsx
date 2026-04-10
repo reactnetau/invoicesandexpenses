@@ -40,16 +40,18 @@ export default async function Image() {
 
         <div
           style={{
+            position: 'absolute',
+            inset: 48,
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between',
-            width: '100%',
-            height: '100%',
+            justifyContent: 'flex-start',
+            gap: 34,
             borderRadius: 36,
             background: 'rgba(255,255,255,0.9)',
             border: '1px solid rgba(148,163,184,0.2)',
             boxShadow: '0 24px 80px rgba(15,23,42,0.10)',
-            padding: 48,
+            padding: 42,
+            boxSizing: 'border-box',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -57,7 +59,7 @@ export default async function Image() {
               <div style={{ fontSize: 24, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em' }}>
                 Schmapps Invoice Tracker
               </div>
-              <div style={{ fontSize: 22, color: '#64748B', marginTop: 10 }}>
+              <div style={{ fontSize: 20, color: '#64748B', marginTop: 8 }}>
                 Invoices, expenses and profit tracking for freelancers
               </div>
             </div>
@@ -70,30 +72,31 @@ export default async function Image() {
                 borderRadius: 999,
                 background: isFull ? '#DBEAFE' : '#FEF3C7',
                 color: isFull ? '#1D4ED8' : '#92400E',
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: 700,
+                maxWidth: 320,
               }}
             >
               {topBadge}
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                fontSize: 76,
+                fontSize: 66,
                 fontWeight: 800,
                 color: '#020617',
-                lineHeight: 1.02,
+                lineHeight: 1.03,
                 letterSpacing: '-0.05em',
               }}
             >
               <span>Track your income</span>
               <span>without the accounting headache</span>
             </div>
-            <div style={{ display: 'flex', fontSize: 30, color: '#475569', maxWidth: 860, lineHeight: 1.35 }}>
+            <div style={{ display: 'flex', fontSize: 26, color: '#475569', maxWidth: 820, lineHeight: 1.3 }}>
               Create invoices in seconds, track expenses, and see your real profit instantly from one clean dashboard.
             </div>
           </div>
@@ -104,21 +107,22 @@ export default async function Image() {
               justifyContent: 'space-between',
               alignItems: 'flex-end',
               borderTop: '1px solid #E2E8F0',
-              paddingTop: 28,
+              paddingTop: 22,
+              marginTop: 'auto',
             }}
           >
-            <div style={{ display: 'flex', gap: 16 }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', maxWidth: 700 }}>
               {['Public invoice links', 'Expense tracking', 'Profit dashboard'].map((item) => (
                 <div
                   key={item}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    padding: '10px 16px',
+                    padding: '10px 14px',
                     borderRadius: 999,
                     background: '#EFF6FF',
                     color: '#1D4ED8',
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: 700,
                   }}
                 >
@@ -127,9 +131,9 @@ export default async function Image() {
               ))}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
-              <div style={{ display: 'flex', fontSize: 18, color: '#64748B' }}>Built for contractors and freelancers</div>
-              <div style={{ display: 'flex', fontSize: 26, color: '#0F172A', fontWeight: 800 }}>invoicesandexpenses.com</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, maxWidth: 260 }}>
+              <div style={{ display: 'flex', fontSize: 16, color: '#64748B', textAlign: 'right' }}>Built for contractors and freelancers</div>
+              <div style={{ display: 'flex', fontSize: 22, color: '#0F172A', fontWeight: 800, textAlign: 'right' }}>invoicesandexpenses.com</div>
             </div>
           </div>
         </div>

@@ -121,16 +121,18 @@ export default async function Image({ params }: Props) {
 
         <div
           style={{
+            position: 'absolute',
+            inset: 48,
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between',
-            width: '100%',
-            height: '100%',
+            justifyContent: 'flex-start',
+            gap: 30,
             borderRadius: 32,
             background: 'rgba(255,255,255,0.88)',
             border: '1px solid rgba(148,163,184,0.24)',
             boxShadow: '0 20px 70px rgba(15,23,42,0.12)',
-            padding: 44,
+            padding: 40,
+            boxSizing: 'border-box',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -138,7 +140,7 @@ export default async function Image({ params }: Props) {
               <div style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.03em' }}>
                 Schmapps Invoice Tracker
               </div>
-              <div style={{ fontSize: 22, color: '#64748B', marginTop: 8 }}>
+              <div style={{ fontSize: 20, color: '#64748B', marginTop: 6 }}>
                 Secure invoice preview
               </div>
             </div>
@@ -151,7 +153,7 @@ export default async function Image({ params }: Props) {
                 borderRadius: 999,
                 background: status.bg,
                 color: status.text,
-                fontSize: 22,
+                fontSize: 20,
                 fontWeight: 800,
                 letterSpacing: '0.08em',
               }}
@@ -160,9 +162,9 @@ export default async function Image({ params }: Props) {
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <div style={{ fontSize: 28, fontWeight: 600, color: '#475569' }}>Amount due</div>
-            <div style={{ fontSize: 88, fontWeight: 800, color: '#020617', letterSpacing: '-0.05em' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ fontSize: 26, fontWeight: 600, color: '#475569' }}>Amount due</div>
+            <div style={{ fontSize: 78, fontWeight: 800, color: '#020617', letterSpacing: '-0.05em' }}>
               {amount}
             </div>
 
@@ -176,7 +178,7 @@ export default async function Image({ params }: Props) {
                   background: status.accent,
                 }}
               />
-              <div style={{ fontSize: 34, color: '#0F172A', fontWeight: 600 }}>
+              <div style={{ fontSize: 30, color: '#0F172A', fontWeight: 600 }}>
                 {invoice.client_name}
               </div>
             </div>
@@ -188,21 +190,22 @@ export default async function Image({ params }: Props) {
               justifyContent: 'space-between',
               alignItems: 'flex-end',
               borderTop: '1px solid #E2E8F0',
-              paddingTop: 28,
+              paddingTop: 22,
+              marginTop: 'auto',
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ fontSize: 20, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <div style={{ fontSize: 18, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Due date
               </div>
-              <div style={{ fontSize: 34, color: '#0F172A', fontWeight: 700 }}>
+              <div style={{ fontSize: 30, color: '#0F172A', fontWeight: 700 }}>
                 {dueDate}
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
-              <div style={{ fontSize: 20, color: '#64748B' }}>Open secure link to view invoice</div>
-              <div style={{ fontSize: 22, color: '#2563EB', fontWeight: 700 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, maxWidth: 260 }}>
+              <div style={{ fontSize: 18, color: '#64748B', textAlign: 'right' }}>Open secure link to view invoice</div>
+              <div style={{ fontSize: 20, color: '#2563EB', fontWeight: 700, textAlign: 'right' }}>
                 invoicesandexpenses.com
               </div>
             </div>
