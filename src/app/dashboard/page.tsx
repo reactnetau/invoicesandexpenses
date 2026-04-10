@@ -254,7 +254,7 @@ function DashboardContent() {
           ) : (
             <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
               <div className="overflow-x-auto">
-              <table className="w-full min-w-[560px] text-sm">
+              <table className="w-full min-w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100">
                     <th className="text-left px-4 py-2 text-slate-500 font-medium">Client</th>
@@ -296,7 +296,7 @@ function DashboardContent() {
           ) : (
             <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
               <div className="overflow-x-auto">
-              <table className="w-full min-w-[480px] text-sm">
+              <table className="w-full min-w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100">
                     <th className="text-left px-4 py-2 text-slate-500 font-medium">Category</th>
