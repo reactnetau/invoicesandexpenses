@@ -118,7 +118,7 @@ export default function Nav() {
                   </button>
                 )}
               </>
-            )}
+            ) : null}
 
             <button
               onClick={logout}
