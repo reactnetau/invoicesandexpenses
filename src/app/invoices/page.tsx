@@ -294,9 +294,19 @@ export default function InvoicesPage() {
   }
 
   async function markPaid(id: string) {
-    const res = await fetch(`/api/invoices/${id}`, { method: 'PATCH' })
+    const res = await fetch(`/api/invoices/${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'paid' }), headers: { 'Content-Type': 'application/json' } })
     if (res.ok) {
       enqueueSnackbar('Invoice marked as paid', { variant: 'success' })
+    } else {
+      enqueueSnackbar('Failed to update invoice', { variant: 'error' })
+    }
+    loadData()
+  }
+
+  async function markUnpaid(id: string) {
+    const res = await fetch(`/api/invoices/${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'unpaid' }), headers: { 'Content-Type': 'application/json' } })
+    if (res.ok) {
+      enqueueSnackbar('Invoice marked as unpaid', { variant: 'success' })
     } else {
       enqueueSnackbar('Failed to update invoice', { variant: 'error' })
     }
@@ -526,12 +536,19 @@ export default function InvoicesPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-4 justify-end">
-                        {inv.status === 'unpaid' && (
+                        {inv.status === 'unpaid' ? (
                           <button
                             onClick={() => markPaid(inv.id)}
                             className="text-xs text-green-600 hover:text-green-700 font-medium"
                           >
                             Mark paid
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => markUnpaid(inv.id)}
+                            className="text-xs text-amber-600 hover:text-amber-700 font-medium"
+                          >
+                            Undo paid
                           </button>
                         )}
                         <button
