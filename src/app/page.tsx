@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import MarketingNav from '@/components/MarketingNav'
 
 const FOUNDING_MEMBER_LIMIT = 50
 
@@ -16,23 +17,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
 
-      {/* Nav */}
-      <header className="border-b border-slate-100 sticky top-0 bg-white/90 backdrop-blur-sm z-10">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <span className="font-bold text-slate-900 text-sm tracking-tight">Invoice Tracker</span>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
-              Sign in
-            </Link>
-            <Link
-              href="/signup"
-              className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg transition-colors"
-            >
-              Get started free
-            </Link>
-          </div>
-        </div>
-      </header>
+      <MarketingNav />
 
       <main className="flex-1">
 

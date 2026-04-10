@@ -165,7 +165,18 @@ function DashboardContent() {
           <h1 className="text-xl font-bold text-slate-800">Dashboard</h1>
           {isPro ? (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">{formatFyLabel(reportFyStartYear)}</span>
+              <select
+                value={reportFyStartYear}
+                onChange={(e) => setReportFyStartYear(Number(e.target.value))}
+                className="text-xs border border-slate-300 rounded-md px-2 py-1 text-slate-600 bg-white"
+                aria-label="Financial year for CSV export"
+              >
+                {reportFyOptions.map((fyStartYear) => (
+                  <option key={fyStartYear} value={fyStartYear}>
+                    {formatFyLabel(fyStartYear)}
+                  </option>
+                ))}
+              </select>
               <a
                 href={`/api/export/csv?fyStart=${reportFyStartYear}`}
                 className="text-sm text-blue-600 hover:underline"
