@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import ConfirmModal from '@/components/ConfirmModal'
 import { useSnackbar } from 'notistack'
 
 interface Client {
@@ -28,8 +29,19 @@ export default function ClientsPage() {
 
   useEffect(() => { loadClients() }, [])
 
-  async function deleteClient(id: string, name: string) {
-    if (!confirm(`Delete ${name}?`)) return
+  const [modalOpen, setModalOpen] = useState(false)
+  const [clientToDelete, setClientToDelete] = useState<{ id: string, name: string } | null>(null)
+
+  function handleDeleteClick(id: string, name: string) {
+    setClientToDelete({ id, name })
+    setModalOpen(true)
+  }
+
+  async function confirmDelete() {
+    if (!clientToDelete) return
+    const { id, name } = clientToDelete
+    setModalOpen(false)
+    setClientToDelete(null)
     const res = await fetch(`/api/clients/${id}`, { method: 'DELETE' })
     if (res.ok) {
       enqueueSnackbar(`${name} deleted`, { variant: 'success' })
@@ -68,7 +80,7 @@ export default function ClientsPage() {
         ) : (
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px] text-sm">
+            <table className="w-full min-w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100">
                   <th className="text-left px-4 py-3 text-slate-500 font-medium">Name</th>
@@ -86,12 +98,20 @@ export default function ClientsPage() {
                     <td className="px-4 py-3 text-slate-500">{c.email ?? '—'}</td>
                     <td className="px-4 py-3 text-slate-500">{c.phone ?? '—'}</td>
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => deleteClient(c.id, c.name)}
-                        className="text-xs text-red-500 hover:text-red-600"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex gap-2 justify-end">
+                        <Link
+                          href={`/clients/${c.id}/edit`}
+                          className="text-xs text-blue-600 hover:text-blue-800"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteClick(c.id, c.name)}
+                          className="text-xs text-red-500 hover:text-red-600"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -101,6 +121,15 @@ export default function ClientsPage() {
           </div>
         )}
       </main>
+      <ConfirmModal
+        open={modalOpen}
+        title="Delete client?"
+        description={`Are you sure you want to delete ${clientToDelete?.name || 'this client'}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={() => { setModalOpen(false); setClientToDelete(null); }}
+      />
     </>
   )
 }
