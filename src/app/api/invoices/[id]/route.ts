@@ -7,16 +7,27 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { id } = await params
-
   const invoice = await prisma.invoice.findFirst({
     where: { id, user_id: session.userId },
   })
-
   if (!invoice) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  let status = 'paid';
+  try {
+    const body = await req.json();
+    if (body.status === 'unpaid') status = 'unpaid';
+  } catch {}
+
+  let data: any = { status };
+  if (status === 'paid') {
+    data.paid_at = new Date();
+  } else if (status === 'unpaid') {
+    data.paid_at = null;
+  }
 
   const updated = await prisma.invoice.update({
     where: { id },
-    data: { status: 'paid', paid_at: new Date() },
+    data,
   })
 
   return NextResponse.json(updated)
