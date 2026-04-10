@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ConfirmModal from "@/components/ConfirmModal";
+import Nav from "@/components/Nav";
 
 interface UserStatus {
   subscription_status: string;
@@ -48,13 +49,20 @@ export default function AccountPage() {
     }
   }
 
-  if (!user) return <main className="max-w-2xl mx-auto px-4 py-12">Loading…</main>;
+  if (!user) return (
+    <>
+      <Nav />
+      <main className="max-w-2xl mx-auto px-4 py-12">Loading…</main>
+    </>
+  );
 
   const isPro = user.subscription_status === "active";
   const isFounding = !!user.is_founding_member;
 
   return (
-    <main className="max-w-2xl mx-auto px-4 py-12">
+    <>
+      <Nav />
+      <main className="max-w-2xl mx-auto px-4 py-12">
       <h1 className="text-2xl font-bold mb-6">Account</h1>
       <div className="bg-white rounded-xl border border-slate-200 p-6 mb-8">
         <div className="mb-4">
@@ -126,6 +134,7 @@ export default function AccountPage() {
         onConfirm={handleDelete}
         onCancel={() => setModalOpen(false)}
       />
-    </main>
+      </main>
+    </>
   );
 }
