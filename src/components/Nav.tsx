@@ -63,6 +63,7 @@ export default function Nav() {
     { href: '/invoices', label: 'Invoices' },
     { href: '/expenses', label: 'Expenses' },
     { href: '/clients', label: 'Clients' },
+    { href: '/settings', label: 'Settings' },
   ]
 
   return (

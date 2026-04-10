@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { jwtVerify } from 'jose'
 
-const PROTECTED = ['/dashboard', '/invoices', '/expenses', '/clients']
+const PROTECTED = ['/dashboard', '/invoices', '/expenses', '/clients', '/settings']
 const AUTH_ONLY = ['/login', '/signup']
 
 function getSecret() {
@@ -38,5 +38,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/invoices/:path*', '/expenses/:path*', '/clients/:path*', '/login', '/signup'],
+  matcher: ['/dashboard/:path*', '/invoices/:path*', '/expenses/:path*', '/clients/:path*', '/settings/:path*', '/login', '/signup'],
 }

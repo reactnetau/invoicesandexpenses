@@ -15,6 +15,12 @@ model User {
   subscription_status   String    @default("inactive")
   subscription_end_date DateTime?
   is_founding_member    Boolean   @default(false)
+  payid_encrypted       String?
+  business_name         String?
+  full_name             String?
+  phone                 String?
+  address               String?
+  abn                   String?
   created_at            DateTime  @default(now())
   invoices              Invoice[]
   expenses              Expense[]

@@ -4,6 +4,7 @@ import { getSession } from '@/lib/auth'
 import { FREE_INVOICE_LIMIT, isPro } from '@/lib/stripe'
 import { generateInvoicePdf } from '@/lib/invoice-pdf'
 import { sendInvoiceEmail } from '@/lib/email'
+import { decrypt } from '@/lib/crypto'
 
 export async function GET() {
   const session = await getSession()
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { client_id, client_name, client_email, amount, due_date, send_email } = await req.json()
+  const { client_id, client_name, client_email, amount, due_date, send_email, fields = {} } = await req.json()
 
   if (!client_name || !amount || !due_date) {
     return NextResponse.json({ error: 'client_name, amount, and due_date are required' }, { status: 400 })
@@ -31,10 +32,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Selected client does not have an email address' }, { status: 400 })
   }
 
-  // Enforce free tier limit
+  // Enforce free tier limit + fetch profile for email
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { subscription_status: true },
+    select: { subscription_status: true, business_name: true, full_name: true, phone: true, address: true, abn: true, payid_encrypted: true },
   })
 
   if (!isPro(user?.subscription_status ?? '')) {
@@ -70,6 +71,11 @@ export async function POST(req: NextRequest) {
 
   if (send_email && client_email) {
     try {
+      let payid: string | null = null
+      if (fields.payid && user?.payid_encrypted) {
+        try { payid = decrypt(user.payid_encrypted) } catch { payid = null }
+      }
+
       const pdfBuffer = await generateInvoicePdf({
         clientName: invoice.client_name,
         clientEmail: invoice.client_email,
@@ -77,6 +83,12 @@ export async function POST(req: NextRequest) {
         dueDate: invoice.due_date,
         publicId: invoice.public_id,
         status: invoice.status,
+        payid,
+        businessName: fields.business_name ? user?.business_name : null,
+        fullName: fields.full_name ? user?.full_name : null,
+        phone: fields.phone ? user?.phone : null,
+        address: fields.address ? user?.address : null,
+        abn: fields.abn ? user?.abn : null,
       })
 
       await sendInvoiceEmail({

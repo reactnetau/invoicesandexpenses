@@ -8,6 +8,12 @@ interface InvoicePdfInput {
   dueDate: Date
   publicId: string
   status: string
+  payid?: string | null
+  businessName?: string | null
+  fullName?: string | null
+  phone?: string | null
+  address?: string | null
+  abn?: string | null
 }
 
 function formatAmount(amount: number) {
@@ -46,13 +52,32 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Buffer
     color: rgb(0.05, 0.09, 0.18),
   })
 
-  page.drawText('Invoice Tracker', {
+  const senderLine = input.businessName || input.fullName || 'Invoice Tracker'
+  page.drawText(senderLine, {
     x: 48,
     y: height - 104,
     size: 14,
     font,
     color: rgb(0.2, 0.3, 0.45),
   })
+
+  // Sender details (phone, address, abn) top-right
+  const senderDetails: string[] = []
+  if (input.fullName && input.businessName) senderDetails.push(input.fullName)
+  if (input.phone) senderDetails.push(input.phone)
+  if (input.abn) senderDetails.push(`ABN: ${input.abn}`)
+  let detailY = height - 56
+  for (const line of senderDetails) {
+    const lineWidth = font.widthOfTextAtSize(line, 10)
+    page.drawText(line, {
+      x: width - 48 - lineWidth,
+      y: detailY,
+      size: 10,
+      font,
+      color: rgb(0.39, 0.45, 0.55),
+    })
+    detailY -= 16
+  }
 
   page.drawText(`Amount due: ${formatAmount(input.amount)}`, {
     x: 48,
@@ -126,13 +151,18 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Buffer
     color: rgb(0.05, 0.09, 0.18),
   })
 
-  const paymentLines = [
-    ['Bank', 'First National Bank'],
-    ['Account name', 'Schmapps Ltd'],
-    ['Account number', '12345678'],
-    ['Sort code', '01-02-03'],
-    ['Reference', `INV-${input.publicId.slice(0, 8).toUpperCase()}`],
-  ]
+  const paymentLines = input.payid
+    ? [
+        ['PayID', input.payid],
+        ['Reference', `INV-${input.publicId.slice(0, 8).toUpperCase()}`],
+      ]
+    : [
+        ['Bank', 'First National Bank'],
+        ['Account name', 'Schmapps Ltd'],
+        ['Account number', '12345678'],
+        ['Sort code', '01-02-03'],
+        ['Reference', `INV-${input.publicId.slice(0, 8).toUpperCase()}`],
+      ]
 
   let py = payY - 48
   for (const [label, value] of paymentLines) {
