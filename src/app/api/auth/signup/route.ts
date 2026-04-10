@@ -23,9 +23,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email already in use' }, { status: 409 })
     }
 
-    // Count existing users to determine founding member eligibility
-    const userCount = await prisma.user.count()
-    const isFoundingMember = userCount < FOUNDING_MEMBER_LIMIT
+    // Only allow founding members if env var is true
+    const allowFounding = process.env.NEXT_PUBLIC_FOUNDING_MEMBERS === 'true';
+    let isFoundingMember = false;
+    if (allowFounding) {
+      const userCount = await prisma.user.count();
+      isFoundingMember = userCount < FOUNDING_MEMBER_LIMIT;
+    }
 
     const password_hash = await bcrypt.hash(password, 12)
     const user = await prisma.user.create({
