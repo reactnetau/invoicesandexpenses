@@ -23,9 +23,23 @@ export default function AccountPage() {
 
   useEffect(() => {
     fetch("/api/user/me")
-      .then((r) => r.json())
-      .then(setUser)
-      .catch(() => {});
+      .then((r) => {
+        if (!r.ok) {
+          window.location.href = "/";
+          return null;
+        }
+        return r.json();
+      })
+      .then((data) => {
+        if (!data || data.error) {
+          window.location.href = "/";
+          return;
+        }
+        setUser(data);
+      })
+      .catch(() => {
+        window.location.href = "/";
+      });
   }, []);
 
   async function handleDelete() {
