@@ -525,7 +525,7 @@ export default function InvoicesPage() {
                       </a>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 justify-end">
+                      <div className="flex items-center gap-4 justify-end">
                         {inv.status === 'unpaid' && (
                           <button
                             onClick={() => markPaid(inv.id)}
