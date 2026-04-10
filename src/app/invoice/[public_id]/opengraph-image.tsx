@@ -136,7 +136,7 @@ export default async function Image({ params }: Props) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.03em' }}>
-                Invoice Tracker
+                Schmapps Invoice Tracker
               </div>
               <div style={{ fontSize: 22, color: '#64748B', marginTop: 8 }}>
                 Secure invoice preview

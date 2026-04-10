@@ -52,7 +52,7 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Buffer
     color: rgb(0.05, 0.09, 0.18),
   })
 
-  const senderLine = input.businessName || input.fullName || 'Invoice Tracker'
+  const senderLine = input.businessName || input.fullName || 'Schmapps Invoice Tracker'
   page.drawText(senderLine, {
     x: 48,
     y: height - 104,

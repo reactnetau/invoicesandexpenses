@@ -1,6 +1,6 @@
 import { getAppUrl } from '@/lib/app-url'
 
-const FROM = `Invoice Tracker <${process.env.GMAIL_USER}>`
+const FROM = `Schmapps Invoice Tracker <${process.env.GMAIL_USER}>`
 
 interface Attachment {
   filename: string
@@ -138,10 +138,10 @@ function formatDueDate(date: Date) {
 }
 
 export async function sendPasswordResetEmail(to: string, resetUrl: string): Promise<void> {
-  const from = `Invoice Tracker <${process.env.GMAIL_FROM ?? process.env.GMAIL_USER}>`
+  const from = `Schmapps Invoice Tracker <${process.env.GMAIL_FROM ?? process.env.GMAIL_USER}>`
   const html = `
     <p>Hi,</p>
-    <p>We received a request to reset your Invoice Tracker password.</p>
+    <p>We received a request to reset your Schmapps Invoice Tracker password.</p>
     <p>
       <a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background-color:#2563eb;color:#ffffff;font-weight:bold;text-decoration:none;border-radius:8px;">
         Reset password
@@ -154,7 +154,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
   const parts = [
     `From: ${from}`,
     `To: ${to}`,
-    `Subject: Reset your Invoice Tracker password`,
+    `Subject: Reset your Schmapps Invoice Tracker password`,
     'MIME-Version: 1.0',
     `Content-Type: multipart/mixed; boundary="${boundary}"`,
     '',
@@ -183,7 +183,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
 
 export async function sendInvoiceEmail(input: InvoiceEmailInput): Promise<void> {
   const invoiceUrl = `${getAppUrl()}/invoice/${input.publicId}`
-  const senderName = input.businessName?.trim() || 'Invoice Tracker'
+  const senderName = input.businessName?.trim() || 'Schmapps Invoice Tracker'
 
   await sendEmail({
     to: input.to,

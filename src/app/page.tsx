@@ -1,13 +1,15 @@
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import MarketingNav from '@/components/MarketingNav'
 import type { Metadata } from 'next'
 import { getAppUrl } from '@/lib/app-url'
+import schmappsLogo from '@/assets/schmappslogo.png'
 
 export const metadata: Metadata = {
-  title: 'Invoice Tracker — Free Invoicing & Expense Tracking for Freelancers',
+  title: 'Schmapps Invoice Tracker — Free Invoicing & Expense Tracking for Freelancers',
   description: 'Create professional invoices, track expenses, and see your profit instantly. Free invoicing software built for freelancers and contractors. No accounting knowledge needed.',
   alternates: {
     canonical: getAppUrl(),
@@ -36,12 +38,12 @@ export default async function Home() {
         '@type': 'WebSite',
         '@id': `${appUrl}/#website`,
         url: appUrl,
-        name: 'Invoice Tracker',
+        name: 'Schmapps Invoice Tracker',
         description: 'Free invoicing and expense tracking for freelancers and contractors',
       },
       {
         '@type': 'SoftwareApplication',
-        name: 'Invoice Tracker',
+        name: 'Schmapps Invoice Tracker',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Web',
         offers: [
@@ -77,7 +79,7 @@ export default async function Home() {
         mainEntity: [
           {
             '@type': 'Question',
-            name: 'Is Invoice Tracker free?',
+            name: 'Is Schmapps Invoice Tracker free?',
             acceptedAnswer: {
               '@type': 'Answer',
               text: 'Yes. The free plan lets you create up to 5 invoices per month with unlimited expense tracking. The Pro plan is $7/month for unlimited invoices and CSV export.',
@@ -85,10 +87,10 @@ export default async function Home() {
           },
           {
             '@type': 'Question',
-            name: 'Who is Invoice Tracker for?',
+            name: 'Who is Schmapps Invoice Tracker for?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'Invoice Tracker is built for freelancers, contractors, and small business owners who want simple invoicing and expense tracking without complex accounting software.',
+              text: 'Schmapps Invoice Tracker is built for freelancers, contractors, and small business owners who want simple invoicing and expense tracking without complex accounting software.',
             },
           },
           {
@@ -105,7 +107,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="theme-shell flex flex-col">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -116,44 +118,79 @@ export default async function Home() {
       <main className="flex-1">
 
         {/* ── HERO ── */}
-        <section className="max-w-5xl mx-auto px-4 pt-20 pb-16 text-center">
+        <section className="max-w-6xl mx-auto px-4 pt-16 pb-16 sm:pt-20">
+          <div className="theme-panel overflow-hidden px-6 py-10 sm:px-10 sm:py-14 text-center relative">
+            <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-r from-[rgba(96,165,250,0.12)] via-transparent to-[rgba(34,197,94,0.12)]" />
 
           {/* Founding member badge */}
           {SHOW_FOUNDING_MEMBERS && !isFull && (
-            <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-8">
+            <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-8 relative z-10">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
               {spotsRemaining} founding member spot{spotsRemaining === 1 ? '' : 's'} remaining — free for life
             </div>
           )}
 
-          <h1 className="text-4xl sm:text-6xl font-bold text-slate-900 leading-tight tracking-tight mb-5">
+          <div className="mb-6 flex justify-center relative z-10">
+            <div className="inline-flex items-center gap-4 rounded-[28px] border border-white/70 bg-white/82 px-5 py-4 shadow-[0_16px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-3xl border border-white/70 bg-white shadow-[0_12px_24px_rgba(34,197,94,0.14)]">
+                <Image
+                  src={schmappsLogo}
+                  alt="Schmapps logo"
+                  className="h-12 w-12 object-contain"
+                  priority
+                />
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Schmapps</p>
+                <p className="text-lg font-semibold text-slate-900">Schmapps Invoice Tracker</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="theme-kicker mb-6 relative z-10">
+            Calm money management
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl font-bold text-slate-900 leading-tight tracking-tight mb-5 relative z-10">
             Track your income without<br className="hidden sm:block" /> the accounting headache
           </h1>
-          <p className="text-lg sm:text-xl text-slate-500 mb-10 max-w-xl mx-auto">
+          <p className="text-lg sm:text-xl text-slate-600 mb-10 max-w-2xl mx-auto relative z-10">
             Simple invoices, expenses, and profit tracking — built for freelancers and contractors who just want to get paid.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 relative z-10">
             <Link
               href="/signup"
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-sm transition-colors"
+              className="theme-button-primary w-full sm:w-auto px-8"
             >
               {isFull ? 'Get started for free' : 'Claim your spot — it\'s free'}
             </Link>
             <Link
               href="/login"
-              className="w-full sm:w-auto text-sm text-slate-500 hover:text-slate-800 px-6 py-3 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors"
+              className="theme-button-secondary w-full sm:w-auto px-6"
             >
               Sign in
             </Link>
           </div>
-          <p className="mt-3 text-xs text-slate-400">No credit card required.</p>
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 relative z-10 text-left">
+            {[
+              'Rounded card-based workspace',
+              'Income vs expenses at a glance',
+              'Human copy, no finance jargon',
+            ].map((item) => (
+              <div key={item} className="rounded-2xl border border-white/60 bg-white/76 px-4 py-3 text-sm text-slate-600 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
+                {item}
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-xs text-slate-400 relative z-10">No credit card required.</p>
+          </div>
         </section>
 
         {/* ── FOUNDING MEMBER OFFER ── */}
         {SHOW_FOUNDING_MEMBERS && !isFull ? (
-          <section className="max-w-2xl mx-auto px-4 pb-16">
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6">
+          <section className="max-w-3xl mx-auto px-4 pb-16">
+            <div className="theme-card bg-gradient-to-br from-amber-50 to-orange-50 p-6 sm:p-7">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
                   <p className="text-sm font-bold text-amber-800 mb-1">Founding Member — Free for life</p>
@@ -182,9 +219,9 @@ export default async function Home() {
         ) : null}
 
         {/* ── FEATURES ── */}
-        <section className="bg-slate-50 border-y border-slate-100 py-20">
+        <section className="py-20">
           <div className="max-w-5xl mx-auto px-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest text-center mb-3">Everything you need</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-[0.24em] text-center mb-3">Everything you need</p>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center mb-12">
               Built for contractors and freelancers
             </h2>
@@ -207,8 +244,8 @@ export default async function Home() {
                   desc: 'Your dashboard shows income, expenses, and net profit the moment you log in. No spreadsheets required.',
                 },
               ].map((f) => (
-                <div key={f.title} className="bg-white rounded-2xl border border-slate-200 p-6">
-                  <div className="text-2xl mb-3">{f.icon}</div>
+                <div key={f.title} className="theme-card p-6 sm:p-7 bg-white/95">
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--surface-muted)] text-2xl">{f.icon}</div>
                   <h3 className="text-sm font-bold text-slate-800 mb-2">{f.title}</h3>
                   <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
                 </div>
@@ -217,7 +254,8 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ── SOCIAL PROOF ── */}
+        {/*
+        ── SOCIAL PROOF ──
         <section className="max-w-5xl mx-auto px-4 py-20">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
@@ -247,16 +285,17 @@ export default async function Home() {
             ))}
           </div>
         </section>
+        */}
 
         {/* ── PRICING ── */}
-        <section className="bg-slate-50 border-y border-slate-100 py-20">
+        <section className="py-20">
           <div className="max-w-3xl mx-auto px-4 text-center">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Pricing</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-[0.24em] mb-3">Pricing</p>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-12">Simple, honest pricing</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
               {/* Free */}
-              <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <div className="theme-card p-6 sm:p-7">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Free</p>
                 <p className="text-3xl font-bold text-slate-900 mb-1">$0<span className="text-base font-normal text-slate-400">/mo</span></p>
                 <p className="text-xs text-slate-400 mb-5">Always free</p>
@@ -270,17 +309,17 @@ export default async function Home() {
               </div>
 
               {/* Pro */}
-              <div className="bg-blue-600 rounded-2xl p-6 text-white relative overflow-hidden">
-                <div className="absolute top-3 right-3 bg-white/20 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+              <div className="rounded-[28px] p-6 sm:p-7 text-white relative overflow-hidden shadow-[0_18px_45px_rgba(34,197,94,0.2)] bg-[linear-gradient(135deg,#22c55e_0%,#1ea96c_48%,#60a5fa_100%)]">
+                <div className="absolute top-3 right-3 bg-white/18 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
                   Most popular
                 </div>
-                <p className="text-xs font-semibold text-blue-200 uppercase tracking-wide mb-1">Pro</p>
-                <p className="text-3xl font-bold mb-1">$7<span className="text-base font-normal text-blue-300">/mo</span></p>
-                <p className="text-xs text-blue-300 mb-5">Cancel anytime</p>
-                <ul className="space-y-2 text-sm text-blue-50">
+                <p className="text-xs font-semibold text-emerald-100 uppercase tracking-wide mb-1">Pro</p>
+                <p className="text-3xl font-bold mb-1">$7<span className="text-base font-normal text-emerald-100/90">/mo</span></p>
+                <p className="text-xs text-emerald-100/90 mb-5">Cancel anytime</p>
+                <ul className="space-y-2 text-sm text-white/95">
                   {['Unlimited invoices', 'Unlimited expenses', 'CSV export', 'Public invoice links', 'Profit dashboard'].map((item) => (
                     <li key={item} className="flex items-center gap-2">
-                      <span className="text-blue-200">✓</span> {item}
+                      <span className="text-emerald-100">✓</span> {item}
                     </li>
                   ))}
                 </ul>
@@ -299,7 +338,7 @@ export default async function Home() {
           </p>
           <Link
             href="/signup"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-10 py-3.5 rounded-xl text-sm transition-colors"
+            className="theme-button-primary px-10 py-3.5"
           >
             Get started for free
           </Link>
@@ -308,9 +347,9 @@ export default async function Home() {
 
       </main>
 
-      <footer className="border-t border-slate-100 py-6">
-        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
-          <span className="font-semibold text-slate-600">Invoice Tracker</span>
+      <footer className="border-t border-white/50 py-8">
+        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <span className="font-semibold text-slate-600">Schmapps Invoice Tracker</span>
           <span>© {new Date().getFullYear()} · Simple invoicing for freelancers</span>
           <div className="flex gap-4">
             <Link href="/login" className="hover:text-slate-600 transition-colors">Sign in</Link>

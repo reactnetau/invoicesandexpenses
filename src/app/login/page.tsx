@@ -34,8 +34,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen px-4 py-10 sm:py-16">
+      <div className="mx-auto grid max-w-5xl items-center gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="hidden lg:block px-4">
+          <p className="theme-kicker mb-5">Welcome back</p>
+          <h1 className="text-5xl font-bold tracking-tight text-slate-900 leading-tight">Sign in and get a calm view of your business money.</h1>
+          <p className="mt-5 max-w-lg text-base text-slate-600">Invoices, expenses, and profit tracking in one place, without the clutter of traditional accounting software.</p>
+        </div>
+
+        <div className="theme-panel w-full max-w-md justify-self-center px-6 py-7 sm:px-8 sm:py-9">
         <h1 className="text-2xl font-bold text-slate-800 mb-1">Sign in</h1>
         <p className="text-slate-500 text-sm mb-6">
           Don&apos;t have an account?{' '}
@@ -52,7 +59,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="theme-input"
               placeholder="you@example.com"
             />
           </div>
@@ -69,7 +76,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="theme-input"
               placeholder="••••••••"
             />
           </div>
@@ -77,11 +84,12 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
+            className="theme-button-primary w-full disabled:opacity-60"
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
+        </div>
       </div>
     </div>
   )

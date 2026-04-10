@@ -96,7 +96,7 @@ function InvoicePreview({ clientName, clientEmail, amount, dueDate, profile, fie
       <div className="bg-blue-50 px-6 py-4 flex items-start justify-between">
         <div>
           <p className="text-2xl font-bold text-slate-900 leading-tight">Invoice</p>
-          <p className="text-sm text-slate-500 mt-0.5">{senderName ?? 'Invoice Tracker'}</p>
+          <p className="text-sm text-slate-500 mt-0.5">{senderName ?? 'Schmapps Invoice Tracker'}</p>
         </div>
         {senderDetails.length > 0 && (
           <div className="text-right text-slate-500 leading-relaxed">

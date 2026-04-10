@@ -1,10 +1,12 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useSnackbar } from 'notistack'
 import ProModal from './ProModal'
+import schmappsLogo from '@/assets/schmappslogo.png'
 
 interface UserStatus {
   subscription_status: string
@@ -81,10 +83,18 @@ export default function Nav() {
   return (
     <>
       <ProModal open={showProModal} onClose={() => setShowProModal(false)} />
-      <nav className="bg-white border-b border-slate-200">
-      <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-14">
-        <Link href="/dashboard" className="font-semibold text-slate-800 text-sm">
-          Invoice Tracker
+      <nav className="border-b border-white/50 bg-white/70 backdrop-blur-xl">
+      <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-16">
+        <Link href="/dashboard" className="inline-flex items-center gap-3 font-semibold text-slate-800 text-sm tracking-tight">
+          <span className="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_24px_rgba(34,197,94,0.18)]">
+            <Image
+              src={schmappsLogo}
+              alt="Schmapps logo"
+              className="h-8 w-8 object-contain"
+              priority
+            />
+          </span>
+          Schmapps Invoice Tracker
         </Link>
 
         <div className="hidden md:flex items-center gap-1">
@@ -92,27 +102,26 @@ export default function Nav() {
             <Link
               key={link.href}
               href={link.href}
-              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-2xl text-sm font-medium transition-colors ${
                 pathname.startsWith(link.href)
-                  ? 'bg-slate-100 text-slate-900'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[rgba(224,239,255,0.75)] text-slate-900'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white'
               }`}
             >
               {link.label}
             </Link>
           ))}
-          {/* Subscribe to Pro button removed from desktop navbar */}
 
           <div className="ml-3 flex items-center gap-2">
             {isPro ? (
               <>
-                <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                <span className="px-2.5 py-1 rounded-full bg-[rgba(224,239,255,0.8)] text-blue-700 text-xs font-semibold">
                   Pro
                 </span>
                 {canManageBilling && (
                   <button
                     onClick={manageSubscription}
-                    className="px-3 py-1.5 rounded text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+                    className="px-3 py-2 rounded-2xl text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white transition-colors"
                   >
                     Billing
                   </button>
@@ -122,7 +131,7 @@ export default function Nav() {
 
             <button
               onClick={logout}
-              className="px-3 py-1.5 rounded text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+              className="px-3 py-2 rounded-2xl text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white transition-colors"
             >
               Logout
             </button>
@@ -132,7 +141,7 @@ export default function Nav() {
         <button
           type="button"
           onClick={() => setMenuOpen((open) => !open)}
-          className="md:hidden inline-flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-slate-700 hover:bg-slate-50 transition-colors"
+          className="md:hidden inline-flex items-center justify-center rounded-2xl border border-white/60 bg-white/80 px-3 py-2 text-slate-700 shadow-sm hover:bg-white transition-colors"
           aria-expanded={menuOpen}
           aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
         >
@@ -146,16 +155,16 @@ export default function Nav() {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white">
-          <div className="max-w-5xl mx-auto px-4 py-3 flex flex-col gap-2">
+        <div className="md:hidden border-t border-white/50 bg-white/88 backdrop-blur-xl">
+          <div className="max-w-5xl mx-auto px-4 py-4 flex flex-col gap-2">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-3 rounded-2xl text-sm font-medium transition-colors ${
                   pathname.startsWith(link.href)
-                    ? 'bg-slate-100 text-slate-900'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'bg-[rgba(224,239,255,0.75)] text-slate-900'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white'
                 }`}
               >
                 {link.label}
@@ -165,16 +174,25 @@ export default function Nav() {
             <div className="h-px bg-slate-100 my-1" />
 
             {isPro ? (
-              <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-blue-50 text-blue-700 text-sm font-semibold">
+              <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-[rgba(224,239,255,0.75)] text-blue-700 text-sm font-semibold">
                 <span>Pro plan</span>
                 <span className="px-2 py-0.5 rounded-full bg-blue-100 text-xs">Active</span>
               </div>
             ) : null}
 
+            {!isPro && (
+              <button
+                onClick={() => setShowProModal(true)}
+                className="theme-button-primary w-full text-left justify-start"
+              >
+                Subscribe to Pro
+              </button>
+            )}
+
             {canManageBilling && (
               <button
                 onClick={manageSubscription}
-                className="w-full px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+                className="w-full px-4 py-3 rounded-2xl text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white transition-colors text-left"
               >
                 Billing
               </button>
@@ -182,7 +200,7 @@ export default function Nav() {
 
             <button
               onClick={logout}
-              className="w-full px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+              className="w-full px-4 py-3 rounded-2xl text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white transition-colors text-left"
             >
               Logout
             </button>

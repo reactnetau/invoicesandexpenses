@@ -1,11 +1,14 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/Providers'
 import { getAppUrl } from '@/lib/app-url'
 
+const inter = Inter({ subsets: ['latin'], display: 'swap' })
+
 const APP_URL = getAppUrl()
-const SITE_NAME = 'Invoice Tracker'
-const DEFAULT_TITLE = 'Invoice Tracker — Free Invoicing & Expense Tracking for Freelancers'
+const SITE_NAME = 'Schmapps Invoice Tracker'
+const DEFAULT_TITLE = 'Schmapps Invoice Tracker — Free Invoicing & Expense Tracking for Freelancers'
 const DEFAULT_DESCRIPTION = 'Create professional invoices, track expenses, and see your profit instantly. Free invoicing software built for freelancers and contractors. No accounting knowledge needed.'
 
 export const metadata: Metadata = {
@@ -29,9 +32,9 @@ export const metadata: Metadata = {
     'send invoice',
     'track expenses',
   ],
-  authors: [{ name: 'Invoice Tracker' }],
-  creator: 'Invoice Tracker',
-  publisher: 'Invoice Tracker',
+  authors: [{ name: 'Schmapps Invoice Tracker' }],
+  creator: 'Schmapps Invoice Tracker',
+  publisher: 'Schmapps Invoice Tracker',
   robots: {
     index: true,
     follow: true,
@@ -54,7 +57,7 @@ export const metadata: Metadata = {
       url: '/opengraph-image',
       width: 1200,
       height: 630,
-      alt: 'Invoice Tracker — Free invoicing for freelancers',
+      alt: 'Schmapps Invoice Tracker — Free invoicing for freelancers',
     }],
   },
   twitter: {
@@ -74,7 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
-      <body className="bg-slate-50 text-slate-900 antialiased">
+      <body className={`${inter.className} bg-[var(--app-bg)] text-[var(--ink-strong)] antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

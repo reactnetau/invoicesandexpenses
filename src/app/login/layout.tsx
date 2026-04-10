@@ -3,7 +3,7 @@ import { getAppUrl } from '@/lib/app-url'
 
 export const metadata: Metadata = {
   title: 'Sign in',
-  description: 'Sign in to Invoice Tracker to manage your invoices, track expenses, and view your profit dashboard.',
+  description: 'Sign in to Schmapps Invoice Tracker to manage your invoices, track expenses, and view your profit dashboard.',
   alternates: { canonical: `${getAppUrl()}/login` },
 }
 
