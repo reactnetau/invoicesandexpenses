@@ -35,6 +35,8 @@ export default function InvoicesPage() {
   const [selectedClientId, setSelectedClientId] = useState('')
   const [amount, setAmount] = useState('')
   const [dueDate, setDueDate] = useState('')
+  const [sendEmail, setSendEmail] = useState(false)
+  const [sendingEmailId, setSendingEmailId] = useState<string | null>(null)
 
   async function loadData() {
     const [invRes, clientRes] = await Promise.all([
@@ -70,21 +72,31 @@ export default function InvoicesPage() {
         client_email: selectedClient!.email,
         amount: parseFloat(amount),
         due_date: dueDate,
+        send_email: sendEmail,
       }),
     })
 
     setSubmitting(false)
 
+    const data = await res.json()
+
     if (!res.ok) {
-      const data = await res.json()
       enqueueSnackbar(data.message ?? data.error ?? 'Failed to create invoice', { variant: 'error' })
       return
     }
 
-    enqueueSnackbar('Invoice created', { variant: 'success' })
+    if (sendEmail && data.email_sent) {
+      enqueueSnackbar('Invoice created and emailed to the client', { variant: 'success' })
+    } else if (sendEmail && !data.email_sent) {
+      enqueueSnackbar(`Invoice created, but email failed: ${data.email_error ?? 'Unknown error'}`, { variant: 'warning' })
+    } else {
+      enqueueSnackbar('Invoice created', { variant: 'success' })
+    }
+
     setSelectedClientId('')
     setAmount('')
     setDueDate('')
+    setSendEmail(false)
     setShowForm(false)
     loadData()
   }
@@ -97,6 +109,22 @@ export default function InvoicesPage() {
       enqueueSnackbar('Failed to update invoice', { variant: 'error' })
     }
     loadData()
+  }
+
+  async function sendPdfEmail(inv: Invoice) {
+    if (!inv.client_email) {
+      enqueueSnackbar('No email address on this invoice', { variant: 'error' })
+      return
+    }
+    setSendingEmailId(inv.id)
+    const res = await fetch(`/api/invoices/${inv.id}/email`, { method: 'POST' })
+    const data = await res.json().catch(() => ({}))
+    setSendingEmailId(null)
+    if (res.ok) {
+      enqueueSnackbar(`Invoice emailed to ${inv.client_email}`, { variant: 'success' })
+    } else {
+      enqueueSnackbar(data.error ?? 'Failed to send email', { variant: 'error' })
+    }
   }
 
   async function deleteInvoice(id: string) {
@@ -180,6 +208,24 @@ export default function InvoicesPage() {
                 </div>
               )}
             </div>
+
+            <label className="flex items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
+              <input
+                type="checkbox"
+                checked={sendEmail}
+                onChange={(e) => setSendEmail(e.target.checked)}
+                disabled={!selectedClient?.email}
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
+              />
+              <span className="text-sm text-slate-600">
+                <span className="block font-medium text-slate-700">Generate PDF and email it to the client</span>
+                <span className="block text-xs text-slate-500">
+                  {selectedClient?.email
+                    ? `The PDF invoice will be sent to ${selectedClient.email}.`
+                    : 'Select a client with a registered email address to enable this option.'}
+                </span>
+              </span>
+            </label>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -281,6 +327,14 @@ export default function InvoicesPage() {
                             Mark paid
                           </button>
                         )}
+                        <button
+                          onClick={() => sendPdfEmail(inv)}
+                          disabled={sendingEmailId === inv.id || !inv.client_email}
+                          className="text-xs text-blue-600 hover:text-blue-700 font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+                          title={inv.client_email ? 'Send PDF to client' : 'No email address on this invoice'}
+                        >
+                          {sendingEmailId === inv.id ? 'Sending…' : 'Send PDF'}
+                        </button>
                         <button
                           onClick={() => deleteInvoice(inv.id)}
                           className="text-xs text-red-500 hover:text-red-600"

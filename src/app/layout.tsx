@@ -1,19 +1,9 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Providers from '@/components/Providers'
+import { getAppUrl } from '@/lib/app-url'
 
-function getMetadataBase() {
-  const rawUrl = process.env.NEXT_PUBLIC_APP_URL?.trim()
-
-  if (!rawUrl) {
-    return new URL('http://localhost:3000')
-  }
-
-  const normalizedUrl = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`
-  return new URL(normalizedUrl)
-}
-
-const metadataBase = getMetadataBase()
+const metadataBase = new URL(getAppUrl())
 
 export const metadata: Metadata = {
   metadataBase,

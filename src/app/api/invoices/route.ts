@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
 import { FREE_INVOICE_LIMIT, isPro } from '@/lib/stripe'
+import { generateInvoicePdf } from '@/lib/invoice-pdf'
+import { sendInvoiceEmail } from '@/lib/email'
 
 export async function GET() {
   const session = await getSession()
@@ -19,10 +21,14 @@ export async function POST(req: NextRequest) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { client_id, client_name, client_email, amount, due_date } = await req.json()
+  const { client_id, client_name, client_email, amount, due_date, send_email } = await req.json()
 
   if (!client_name || !amount || !due_date) {
     return NextResponse.json({ error: 'client_name, amount, and due_date are required' }, { status: 400 })
+  }
+
+  if (send_email && !client_email) {
+    return NextResponse.json({ error: 'Selected client does not have an email address' }, { status: 400 })
   }
 
   // Enforce free tier limit
@@ -59,5 +65,35 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  return NextResponse.json(invoice, { status: 201 })
+  let email_sent = false
+  let email_error: string | null = null
+
+  if (send_email && client_email) {
+    try {
+      const pdfBuffer = await generateInvoicePdf({
+        clientName: invoice.client_name,
+        clientEmail: invoice.client_email,
+        amount: parseFloat(invoice.amount.toString()),
+        dueDate: invoice.due_date,
+        publicId: invoice.public_id,
+        status: invoice.status,
+      })
+
+      await sendInvoiceEmail({
+        to: client_email,
+        clientName: invoice.client_name,
+        amount: parseFloat(invoice.amount.toString()),
+        dueDate: invoice.due_date,
+        publicId: invoice.public_id,
+        pdfBuffer,
+      })
+
+      email_sent = true
+    } catch (error) {
+      console.error('Failed to send invoice email:', error)
+      email_error = error instanceof Error ? error.message : 'Unknown email error'
+    }
+  }
+
+  return NextResponse.json({ invoice, email_sent, email_error }, { status: 201 })
 }
