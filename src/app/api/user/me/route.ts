@@ -13,6 +13,7 @@ export async function GET() {
       subscription_status: true,
       subscription_end_date: true,
       stripe_customer_id: true,
+      is_founding_member: true,
     },
   })
 
@@ -23,5 +24,6 @@ export async function GET() {
     subscription_status: user.subscription_status,
     subscription_end_date: user.subscription_end_date,
     has_stripe_customer: !!user.stripe_customer_id,
+    is_founding_member: user.is_founding_member,
   })
 }

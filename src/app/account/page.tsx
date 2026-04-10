@@ -7,12 +7,15 @@ import ConfirmModal from "@/components/ConfirmModal";
 interface UserStatus {
   subscription_status: string;
   email: string;
+  is_founding_member?: boolean;
 }
 
 export default function AccountPage() {
   const [user, setUser] = useState<UserStatus | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showFoundingModal, setShowFoundingModal] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,9 +36,22 @@ export default function AccountPage() {
     }
   }
 
+  async function handleCancelPro() {
+    setCancelling(true);
+    const res = await fetch("/api/stripe/cancel", { method: "POST" });
+    setCancelling(false);
+    if (res.ok) {
+      alert("Your subscription will be cancelled at the end of the billing period.");
+      router.refresh();
+    } else {
+      alert("Failed to cancel subscription.");
+    }
+  }
+
   if (!user) return <main className="max-w-2xl mx-auto px-4 py-12">Loading…</main>;
 
   const isPro = user.subscription_status === "active";
+  const isFounding = !!user.is_founding_member;
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-12">
@@ -48,7 +64,9 @@ export default function AccountPage() {
         <div>
           <div className="text-sm text-slate-500 mb-1">Membership</div>
           <div className="font-medium text-slate-800">
-            {isPro ? (
+            {isFounding ? (
+              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">Pro (free)</span>
+            ) : isPro ? (
               <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">Pro (Paid)</span>
             ) : (
               <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">Free</span>
@@ -56,17 +74,49 @@ export default function AccountPage() {
           </div>
         </div>
       </div>
+      {/* Cancel Pro button for paid (non-founding) members */}
+      {isPro && !isFounding && (
+        <button
+          className="px-4 py-2 rounded-lg text-sm font-medium bg-yellow-500 hover:bg-yellow-600 text-white mb-4 mr-4 disabled:opacity-60"
+          onClick={handleCancelPro}
+          disabled={cancelling}
+        >
+          {cancelling ? 'Cancelling…' : 'Cancel Pro'}
+        </button>
+      )}
+
+      {/* Delete Account button (disabled for paid Pro users, enabled for founding members and free users) */}
       <button
-        disabled={isPro}
-        onClick={() => setModalOpen(true)}
+        disabled={isPro && !isFounding}
+        onClick={() => {
+          if (isFounding) {
+            setShowFoundingModal(true);
+          } else {
+            setModalOpen(true);
+          }
+        }}
         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-          isPro
+          isPro && !isFounding
             ? "bg-slate-100 text-slate-400 cursor-not-allowed"
             : "bg-red-600 hover:bg-red-700 text-white"
         }`}
       >
         Delete Account
       </button>
+
+      {/* Founding member warning modal */}
+      <ConfirmModal
+        open={showFoundingModal}
+        title="Delete account?"
+        description="You are a founding member. If you delete your account, you will permanently lose your lifetime free Pro membership. This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={() => {
+          setShowFoundingModal(false);
+          handleDelete();
+        }}
+        onCancel={() => setShowFoundingModal(false)}
+      />
       <ConfirmModal
         open={modalOpen}
         title="Delete account?"
