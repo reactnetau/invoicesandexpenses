@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String    @id @default(uuid())
+  email                 String    @unique
+  password_hash         String
+  stripe_customer_id    String?   @unique
+  subscription_status   String    @default("inactive")
+  subscription_end_date DateTime?
+  is_founding_member    Boolean   @default(false)
+  created_at            DateTime  @default(now())
+  invoices              Invoice[]
+  expenses              Expense[]
+  clients               Client[]
+}
+
+model Client {
+  id         String    @id @default(uuid())
+  user_id    String
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  name       String
+  email      String?
+  phone      String?
+  company    String?
+  address    String?
+  created_at DateTime  @default(now())
+  invoices   Invoice[]
+}
+
+model Invoice {
+  id           String    @id @default(uuid())
+  user_id      String
+  user         User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  client_id    String?
+  client       Client?   @relation(fields: [client_id], references: [id])
+  client_name  String
+  client_email String?
+  amount       Decimal   @db.Decimal(10, 2)
+  status       String    @default("unpaid")
+  due_date     DateTime
+  paid_at      DateTime?
+  public_id    String    @unique @default(uuid())
+  is_public    Boolean   @default(true)
+  created_at   DateTime  @default(now())
+}
+
+model Expense {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  category   String
+  amount     Decimal  @db.Decimal(10, 2)
+  date       DateTime
+  created_at DateTime @default(now())
+}

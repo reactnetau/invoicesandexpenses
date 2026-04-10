@@ -1,0 +1,21 @@
+# Common commands for invoicesandexpenses.com
+
+# Install dependencies
+yarn install
+
+# Run development server
+yarn dev
+
+# Build for production
+yarn build
+
+# Start production server
+yarn start
+
+# Prisma commands
+npx prisma migrate dev
+npx prisma generate
+
+# Lint and format
+yarn lint
+yarn format
