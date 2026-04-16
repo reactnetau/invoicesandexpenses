@@ -354,6 +354,7 @@ export default async function Home() {
           <div className="flex gap-4">
             <Link href="/login" className="hover:text-slate-600 transition-colors">Sign in</Link>
             <Link href="/signup" className="hover:text-slate-600 transition-colors">Sign up</Link>
+            <Link href="/delete-account" className="hover:text-slate-600 transition-colors">Delete account</Link>
           </div>
         </div>
       </footer>
