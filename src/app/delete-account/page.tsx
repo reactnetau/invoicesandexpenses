@@ -2,7 +2,6 @@
 
 import { useState, FormEvent } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, CheckCircle, Trash2 } from 'lucide-react'
 
 export default function DeleteAccountPage() {
   const [email, setEmail] = useState('')
@@ -26,8 +25,8 @@ export default function DeleteAccountPage() {
       <div className="theme-panel mx-auto w-full max-w-md px-6 py-7 sm:px-8 sm:py-9">
         {submitted ? (
           <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4 text-xl">
+              ✓
             </div>
             <h1 className="text-xl font-bold text-slate-800 mb-2">Request sent</h1>
             <p className="text-sm text-slate-500 mb-4">
@@ -47,19 +46,14 @@ export default function DeleteAccountPage() {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                <Trash2 className="w-5 h-5 text-red-600" />
-              </div>
-              <h1 className="text-2xl font-bold text-slate-800">Delete account</h1>
-            </div>
+            <h1 className="text-2xl font-bold text-slate-800 mb-4">Delete account</h1>
 
             <p className="text-sm text-slate-500 mb-6">
               Submit a request to permanently delete your account and all associated data.
             </p>
 
             <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-4 mb-6 flex gap-3">
-              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <span className="text-amber-600 flex-shrink-0 mt-0.5 text-sm">⚠</span>
               <div className="text-sm text-amber-800">
                 <p className="font-semibold mb-1">This action is permanent</p>
                 <p>All your invoices, expenses, clients, and account data will be deleted and cannot be recovered.</p>
