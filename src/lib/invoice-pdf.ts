@@ -1,5 +1,4 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import { getAppUrl } from '@/lib/app-url'
 
 interface InvoicePdfInput {
   clientName: string
@@ -34,7 +33,6 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Buffer
   const { width, height } = page.getSize()
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
-  const invoiceUrl = `${getAppUrl()}/invoice/${input.publicId}`
 
   page.drawRectangle({
     x: 0,
@@ -61,10 +59,11 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Buffer
     color: rgb(0.2, 0.3, 0.45),
   })
 
-  // Sender details (phone, address, abn) top-right
+  // Sender details top-right
   const senderDetails: string[] = []
   if (input.fullName && input.businessName) senderDetails.push(input.fullName)
   if (input.phone) senderDetails.push(input.phone)
+  if (input.address) senderDetails.push(input.address)
   if (input.abn) senderDetails.push(`ABN: ${input.abn}`)
   let detailY = height - 56
   for (const line of senderDetails) {
@@ -92,7 +91,6 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Buffer
     ['Client email', input.clientEmail || 'No email on file'],
     ['Due date', formatDate(input.dueDate)],
     ['Status', input.status],
-    ['Public link', invoiceUrl],
   ]
 
   let y = height - 250
@@ -122,17 +120,8 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Buffer
     color: rgb(0.88, 0.91, 0.95),
   })
 
-  page.drawText('Share the public link above to let your client view the invoice online.', {
-    x: 48,
-    y: y - 24,
-    size: 11,
-    font,
-    color: rgb(0.39, 0.45, 0.55),
-    maxWidth: width - 96,
-  })
-
   // Payment details section
-  const payY = y - 80
+  const payY = y - 24
   page.drawRectangle({
     x: 48,
     y: payY - 110,
